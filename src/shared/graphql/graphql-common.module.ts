@@ -1,8 +1,7 @@
 import { Module } from '@nestjs/common';
-import { ApolloScopedContextPlugin } from './plugins/apollo-scoped-context.plugin';
-import { Loader } from './decorators/dataloader.decorator';
+import { DataloaderPlugin } from './libs/dataloader/dataloader.plugin';
 
 @Module({
-    providers: [ApolloScopedContextPlugin],
+    providers: [DataloaderPlugin],
 })
 export class GraphQLCommonModule {}
