@@ -15,7 +15,7 @@ export const Loader = createParamDecorator(<K, V>(options: DecoratorOptions<K, V
 
     const dataloaderFactory: DataloaderFactory<K, V> = Container.of(requestId).get(DataloaderFactory);
 
-    return async (batchFunction: BatchLoadFn<K, V>) => {
+    return async (batchFunction: BatchLoadFn<K, V>): Promise<V> => {
         const loader = dataloaderFactory.makeDefaultLoader(info, batchFunction, options);
 
         return loader.load(({ root, args } as unknown) as K);

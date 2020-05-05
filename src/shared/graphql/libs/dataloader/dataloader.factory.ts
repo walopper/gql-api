@@ -46,7 +46,8 @@ export class DataloaderFactory<K, V> {
         //Pass only the root property, remove "args"
         const wrappedBatchFunction = batchFunction;
 
-        return async function(keys: ReadonlyArray<K>) {
+        // @ts-ignore
+        return async function<K, V>(keys: ReadonlyArray<K>) {
             const returnEntitiesKeys = _.map(keys, 'root');
             return wrappedBatchFunction(returnEntitiesKeys);
         };
@@ -90,7 +91,7 @@ export class DataloaderFactory<K, V> {
         /**
          * Many to Many with Pivot Table
          * How to use?
-         * @DataloaderTypeORM({pivotTableEntity: MessageTagPivot})
+         * @loader({typeORM: {pivotTableEntity: MessageTagPivot}})
          * [QueryBuilder].innerJoinAndMapMany('tag.MessageTagPivot', MessageTagPivot, 'pivot', 'pivot.tag_id = tag.id AND pivot.message_id IN (:...ids)', { ids: messageIds })
          */
         if (pivotTableEntity) {
@@ -202,6 +203,7 @@ export class DataloaderFactory<K, V> {
     }
 
     protected createDataloader(id: string, batchFunction: BatchLoadFn<K, V>, options: DataloaderOptions<K, V> = {}) {
+        // @ts-ignore
         const loader = new Dataloader<K, V>(batchFunction as DataloaderBatchLoadFn<K, V>, options);
         this.loaders[id] = loader;
         return loader;

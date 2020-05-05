@@ -19,8 +19,8 @@ export default class RecipeResolver {
         return this.recipeService.getRecipes();
     }
 
-    @ResolveField(() => [Recipe])
-    async children(@Parent() recipe: Recipe, @Loader({ typeORM: false }) loader: DataloaderFn<Recipe, Recipe[]>) {
+    @ResolveField('children', () => [Recipe])
+    async getChildren(@Parent() recipe: Recipe, @Loader({ typeORM: false }) loader: DataloaderFn<Recipe[], Recipe[]>) {
         //Dataloader Batch
         return loader(async (parentRecipesIds: Recipe[]) => {
             console.log('Children', parentRecipesIds);
@@ -28,8 +28,8 @@ export default class RecipeResolver {
         });
     }
 
-    @ResolveField(() => Recipe)
-    async parent(@Parent() recipe: Recipe, @Loader({ typeORM: false }) loader: DataloaderFn<Recipe, Recipe>) {
+    @ResolveField('parent', () => Recipe)
+    async getParent(@Parent() recipe: Recipe, @Loader({ typeORM: true }) loader: DataloaderFn<Recipe[], Recipe>) {
         //Dataloader Batch
         return loader(async (childRecipesIds: Recipe[]) => {
             console.log('Parent', childRecipesIds);
