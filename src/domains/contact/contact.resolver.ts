@@ -1,33 +1,36 @@
 import { Args, Query, ResolveField, Resolver } from '@nestjs/graphql';
+import { Paginate, PaginateFn } from '../../graphql/libs/cursor-connection/paginate.decorator';
+import { DataloaderFn, Loader } from '../../graphql/libs/dataloader';
 import { Company } from '../company/company.entity';
-import { Contact } from './contact.entity';
+import { Contact, ContactConnection } from './contact.entity';
 import { CompanyService } from '../company/company.service';
-import { ContactQueryOrderByInput } from './inputs/contact-query-orderby.input';
-import { ContactQueryWhereInput } from './inputs/contact-query-where.input';
+import { Inject } from '@nestjs/common';
+import { ContactService } from './contact.service';
+import { ContactListArgs } from './args/contact-list.args';
 //import { ServerError } from '../../utils/errorHandler';
 //import { WHERE_INPUT } from '../../config/errorCodes';
-import { DataloaderFn, Loader } from '../../shared/graphql/libs/dataloader';
 
-@Resolver(() => Contact)
+@Resolver(of => Contact)
 export class ContactResolver {
-    @Query(type => Contact)
-    async contacts(
-        @Args('first', { nullable: true }) first?: number,
-        @Args('last', { nullable: true }) last?: number,
-        @Args('before', { nullable: true }) before?: string,
-        @Args('after', { nullable: true }) after?: string,
-        @Args('where', { nullable: true }) where?: ContactQueryWhereInput,
-        @Args('order_by', { nullable: true }) orderBy?: ContactQueryOrderByInput,
-    ): Promise<Contact[]> {
-        //throw new ServerError(WHERE_INPUT.INVALID_EMAIL_ADDR);
+    @Inject()
+    protected contactService: ContactService;
 
-        return [];
+    @Inject()
+    protected companyService: CompanyService;
 
-        /*
-        return container
-            .get(ContactService)
-            .getListAndCount({ pagination: { first, last, before, after }, where, orderBy });
-        */
+    @Query(type => ContactConnection, { name: 'contacts' })
+    async getContacts(
+        @Paginate() paginate: PaginateFn<Contact>,
+        @Args() listArgs: ContactListArgs,
+    ): Promise<[Contact[], number]> {
+        return paginate(pagination =>
+            this.contactService.getListAndCount({
+                pagination,
+                where: listArgs.where,
+                orderBy: listArgs.order_by,
+            }),
+        );
+
         /*
         const ERROR_INVALID_FORM_DATA = {message: "Invalid form data", code: 190, error_subcode: 460};
         throw new UserInputError(ERROR_INVALID_FORM_DATA);
@@ -35,8 +38,8 @@ export class ContactResolver {
 
         /*
           "error": {
-            "message": "Message describing the error", 
-            //"type": "OAuthException", 
+            "message": "Message describing the error",
+            //"type": "OAuthException",
             "code": 190,
             "error_subcode": 460,
             "fbtrace_id": "EJplcsCHuLu"
@@ -53,15 +56,11 @@ export class ContactResolver {
         */
     }
 
-    @ResolveField(() => Company)
-    async company(@Loader({ typeORM: true }) loader: DataloaderFn<number, Company>) {
-        return [];
-        /*
+    @ResolveField(type => Company, { name: 'company', nullable: true })
+    async getCompany(@Loader({ typeORM: true }) loader: DataloaderFn<number[], Company>) {
         //Dataloader Batch
         return loader(async (companiesIds: number[]) => {
-            return container.get(CompanyService).getList({ where: { id: { _in: companiesIds } } });
+            return this.companyService.getList({ where: { id: { _in: companiesIds } } });
         });
-
-         */
     }
 }

@@ -3,6 +3,7 @@ import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
 import { Contact } from '../contact/contact.entity';
 import { IInstitution } from '../institution/institution.interface';
 import { AInstitution } from '../institution/institution.abstract';
+import { Connection } from '../../graphql/libs/cursor-connection/connection';
 
 @ObjectType({ implements: IInstitution })
 @Entity({ name: 'company' })
@@ -12,7 +13,7 @@ export class Company extends AInstitution {
     @PrimaryColumn()
     id: number;
 
-    @Field()
+    @Field({ nullable: true })
     @Column()
     crm_is_active: boolean;
 
@@ -20,8 +21,11 @@ export class Company extends AInstitution {
         () => Contact,
         contact => contact.Company,
     )
-    contacts: Contact[];
+    Contacts: Contact[];
 }
+
+@ObjectType()
+export class CompanyConnection extends Connection(Company) {}
 
 /*
 @ObjectType()

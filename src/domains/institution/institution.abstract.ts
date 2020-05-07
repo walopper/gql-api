@@ -1,4 +1,4 @@
-import { Field, ID } from '@nestjs/graphql';
+import { Field } from '@nestjs/graphql';
 import { IInstitution } from './institution.interface';
 import { Institution } from './institution.entity';
 import { AfterLoad, BaseEntity, BeforeInsert, getConnection, JoinColumn, OneToOne } from 'typeorm';
@@ -12,7 +12,6 @@ export abstract class AInstitution extends BaseEntity implements IInstitution {
     @Field({ nullable: true })
     level: number;
 
-    /*
     @OneToOne(_ => Institution)
     @JoinColumn({ name: 'id' })
     Institution: Institution;
@@ -53,5 +52,4 @@ export abstract class AInstitution extends BaseEntity implements IInstitution {
         //Update main entity id
         this.id = institution.id;
     }
-     */
 }

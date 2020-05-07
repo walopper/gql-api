@@ -1,0 +1,172 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+"""Provides info abou the current page"""
+type PageInfo {
+  """Cursor referencing the beginning of the page"""
+  startCursor: String!
+
+  """Cursor referencing the end of the page"""
+  endCursor: String!
+  hasPreviousPage: Boolean!
+  hasNextPage: Boolean!
+}
+
+type Contact {
+  id: ID
+  sex: String
+  first_name: String
+  last_name: String
+  birthdate: DateTime
+  name: String
+  email: EmailAddress
+  address1: String
+  address2: String
+  city: String
+  postal_code: String
+  notes: String
+  interest: String
+  assigned_at: DateTime
+  last_activity_at: DateTime
+  follow_up_at: DateTime
+  last_communication_interaction_at: DateTime
+  created_at: DateTime
+  updated_at: DateTime
+  company: Company
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+"""Mongo object id scalar type"""
+scalar EmailAddress
+
+"""Provides Contact item and a cursor to its position"""
+type ContactEdge {
+  """The position of this Contact item"""
+  cursor: String!
+  node: Contact!
+}
+
+type ContactConnection {
+  """Total number of Contact items"""
+  totalCount: Int!
+  pageInfo: PageInfo!
+  edges: [ContactEdge!]!
+}
+
+type Company implements IInstitution {
+  id: ID!
+  name: String
+  level: Float
+  crm_is_active: Boolean
+  contacts(order_by: [ContactQueryOrderByInput!], where: ContactQueryWhereInput, after: String, before: String, last: Float, first: Float): ContactConnection!
+}
+
+interface IInstitution {
+  id: ID!
+  name: String
+  level: Float
+}
+
+input ContactQueryOrderByInput {
+  name: QueryOrderByDirection
+  company: CompanyQueryOrderByInput
+}
+
+enum QueryOrderByDirection {
+  ASC
+  DESC
+}
+
+input CompanyQueryOrderByInput {
+  name: QueryOrderByDirection
+  crm_is_active: QueryOrderByDirection
+}
+
+input ContactQueryWhereInput {
+  _and: [ContactQueryWhereInput!]
+  _or: [ContactQueryWhereInput!]
+  id: NumberComparisionOperatorsInput
+  name: StringComparisionOperatorsInput
+  company_id: NumberComparisionOperatorsInput
+  company: CompanyQueryWhereInput
+}
+
+input NumberComparisionOperatorsInput {
+  _eq: Float
+  _not_eq: Float
+  _in: [Float!]
+  _not_in: [Float!]
+  _is_null: Boolean
+}
+
+input StringComparisionOperatorsInput {
+  _eq: String
+  _not_eq: String
+  _in: [String!]
+  _not_in: [String!]
+  _contains: String
+  _not_contains: String
+  _starts_with: String
+  _not_starts_with: String
+  _ends_With: String
+  _not_ends_With: String
+  _is_null: Boolean
+}
+
+input CompanyQueryWhereInput {
+  _and: CompanyQueryWhereInput
+  _or: CompanyQueryWhereInput
+  id: NumberComparisionOperatorsInput
+  name: StringComparisionOperatorsInput
+  crm_is_active: BooleanComparisionOperatorsInput
+}
+
+input BooleanComparisionOperatorsInput {
+  _eq: Boolean
+  _not_eq: Boolean
+  _is_null: Boolean
+}
+
+"""Provides Company item and a cursor to its position"""
+type CompanyEdge {
+  """The position of this Company item"""
+  cursor: String!
+  node: Company!
+}
+
+type CompanyConnection {
+  """Total number of Company items"""
+  totalCount: Int!
+  pageInfo: PageInfo!
+  edges: [CompanyEdge!]!
+}
+
+type Query {
+  contacts(
+    """Cursor to the item after which first n items will be taken"""
+    after: String
+    first: Int
+    before: String
+
+    """Cursor to the item before which last n items will be taken"""
+    last: Int
+    where: ContactQueryWhereInput
+    order_by: [ContactQueryOrderByInput!]
+  ): ContactConnection!
+  companies(
+    """Cursor to the item after which first n items will be taken"""
+    after: String
+    first: Int
+    before: String
+
+    """Cursor to the item before which last n items will be taken"""
+    last: Int
+    where: CompanyQueryWhereInput
+    order_by: [CompanyQueryOrderByInput!]
+  ): CompanyConnection!
+}

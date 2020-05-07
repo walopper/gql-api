@@ -1,7 +1,8 @@
 import { Field, ID, ObjectType, registerEnumType } from '@nestjs/graphql';
 import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Company } from '../company/company.entity';
-import { EmailAddress } from '../../shared/graphql/scalars/email-address.scalar';
+import { EmailAddress } from '../../graphql/scalars/email-address.scalar';
+import { Connection } from '../../graphql/libs/cursor-connection/connection';
 
 enum ContactSex {
     M = 'M',
@@ -20,7 +21,6 @@ export class Contact extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Field(_ => Company, { name: 'company', nullable: true })
     @ManyToOne(_ => Company)
     @JoinColumn({ name: 'company_id' })
     Company?: Company;
@@ -28,7 +28,7 @@ export class Contact extends BaseEntity {
     @Column()
     company_id: number;
 
-    @Field({ nullable: !!1 })
+    @Field({ nullable: true })
     @Column()
     sex: ContactSex;
 
@@ -139,3 +139,6 @@ export class Contact extends BaseEntity {
     @Column()
     deleted_at: Date;
 }
+
+@ObjectType()
+export class ContactConnection extends Connection(Contact) {}

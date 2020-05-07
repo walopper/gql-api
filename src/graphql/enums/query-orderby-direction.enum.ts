@@ -1,9 +1,5 @@
 import { registerEnumType } from '@nestjs/graphql';
-
-export enum QueryOrderByDirection {
-    ASC = 'ASC',
-    DESC = 'DESC',
-}
+import { QueryOrderByDirection } from '../../shared/enums/query-orderby-direction.enum';
 
 registerEnumType(QueryOrderByDirection, {
     name: 'QueryOrderByDirection',

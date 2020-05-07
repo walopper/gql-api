@@ -1,11 +1,18 @@
 import { QueryOptions } from '../types/query-options.type';
 import { BaseRepository } from './base.repository';
 import { SelectQueryBuilder } from '../utils/select-query-builder';
-import { BaseQueryWhereInput } from '../graphql/base-classes/base-query-where-input';
-import { BaseQueryOrderByInput } from '../graphql/base-classes/base-query-orderby.input';
+import { BaseQueryWhereInput } from './base-query-where.input';
+import { BaseQueryOrderByInput } from './base-query-orderby.input';
+import { Inject } from '@nestjs/common';
+import { CONTEXT } from '@nestjs/graphql';
 
 export abstract class BaseEntityService<Entity> {
     protected abstract readonly repository: BaseRepository<Entity>;
+    protected authUser: any;
+
+    constructor(@Inject(CONTEXT) context) {
+        this.authUser = context.req.user;
+    }
 
     protected getQueryBuilder<T extends BaseQueryWhereInput, U extends BaseQueryOrderByInput>(
         queryOptions: QueryOptions<T, U>,

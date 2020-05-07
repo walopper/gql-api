@@ -11,12 +11,12 @@ import {
 } from 'typeorm';
 //import logger from '../../utils/logger';
 import { SelectQueryBuilder as SelectQueryBuilderWrapper } from '../utils/select-query-builder';
-import { BaseQueryWhereInput, QueryWhereInputValue } from '../graphql/base-classes/base-query-where-input';
-import { ComparisionOperatorsInput } from '../graphql/inputs/query-where-comparision-operators.input';
-import { QueryWhereConditionOperator, QueryWhereHelper } from '../graphql/utils/query-where-helper';
-import { BaseQueryOrderByInput } from '../graphql/base-classes/base-query-orderby.input';
-import { QueryOrderByDirection } from '../graphql/enums/query-orderby-direction.enum';
-import { GraphqlTypeOrmMapper } from '../graphql/utils/graphql-typeorm-mapper.util';
+import { BaseQueryWhereInput, QueryWhereInputValue } from './base-query-where.input';
+import { ComparisionOperatorsInput } from '../../graphql/inputs/query-where-comparision-operators.input';
+import { QueryWhereConditionOperator, QueryWhereHelper } from '../../graphql/utils/query-where-helper';
+import { BaseQueryOrderByInput } from './base-query-orderby.input';
+import { QueryOrderByDirection } from '../enums/query-orderby-direction.enum';
+import { GraphqlTypeOrmMapper } from '../../graphql/utils/graphql-typeorm-mapper.util';
 import { QueryOptions, QueryPaginationOptions } from '../types/query-options.type';
 
 export abstract class BaseRepository<Entity> extends Repository<Entity> {
@@ -63,7 +63,8 @@ export abstract class BaseRepository<Entity> extends Repository<Entity> {
         if (options?.first && options.first > 100) {
             //throw new ServerError(WHERE_INPUT.QUERY_TAKE_MAX_REACHED);
         }
-        query.take(100);
+        query.skip(options.offset || 0);
+        query.take(options.limit || 20);
     }
 
     public queryOrderByHelper<U extends BaseQueryOrderByInput>(

@@ -3,8 +3,8 @@ import _ from 'lodash';
 import { Brackets, getCustomRepository, getMetadataArgsStorage, SelectQueryBuilder, WhereExpression } from 'typeorm';
 //import logger from './logger';
 import { GraphqlTypeOrmMapper } from './graphql-typeorm-mapper.util';
-import { BaseRepository } from '../../base-classes/base.repository';
-import { BaseQueryWhereInput } from '../base-classes/base-query-where-input';
+import { BaseRepository } from '../../shared/base-classes/base.repository';
+import { BaseQueryWhereInput } from '../../shared/base-classes/base-query-where.input';
 import {
     ComparisionOperatorsInput,
     ComparisionOperatorsValue,

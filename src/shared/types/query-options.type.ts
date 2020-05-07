@@ -1,5 +1,5 @@
-import { BaseQueryWhereInput } from '../graphql/base-classes/base-query-where-input';
-import { BaseQueryOrderByInput } from '../graphql/base-classes/base-query-orderby.input';
+import { BaseQueryWhereInput } from '../base-classes/base-query-where.input';
+import { BaseQueryOrderByInput } from '../base-classes/base-query-orderby.input';
 
 export type QueryOptions<
     T extends BaseQueryWhereInput = BaseQueryWhereInput,
@@ -15,4 +15,6 @@ export type QueryPaginationOptions = {
     last?: number;
     after?: string;
     before?: string;
+    offset?: number;
+    limit?: number;
 };

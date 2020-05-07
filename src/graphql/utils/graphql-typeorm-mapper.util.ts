@@ -1,31 +1,10 @@
-import _ from 'lodash';
 import { EntitySchema, getConnection } from 'typeorm';
-import { TypeMetadataStorage } from '@nestjs/graphql/dist/schema-builder/storages/type-metadata.storage';
+import { GraphqlMetadata } from './graphql-metadata.util';
 
 export abstract class GraphqlTypeOrmMapper {
-
-    protected static getGraphqlObjectTypeMetadata(objectName: Function | EntitySchema<unknown> | string) {
-        const metadataStorage = TypeMetadataStorage;
-
-        if (typeof objectName === 'function') {
-            objectName = objectName.name;
-        }
-
-        return _.find(metadataStorage.getObjectTypesMetadata(), (it) => it.name === objectName);
-    }
-
-    protected static getGraphqlFieldMetadata(
-        objectName: Function | EntitySchema<unknown> | string,
-        fieldName: string,
-    ) {
-        const objectTypeMetadata = this.getGraphqlObjectTypeMetadata(objectName);
-        return _.find(objectTypeMetadata?.properties, (it) => it.schemaName === fieldName);
-    }
-
-
     public static mapTypeOrmRelationMetadata(target: Function | EntitySchema<unknown> | string, fieldName: string) {
         const entityMetadata = getConnection().getMetadata(target);
-        const fieldMetadata = this.getGraphqlFieldMetadata(target, fieldName);
+        const fieldMetadata = GraphqlMetadata.getFieldMetadata(target, fieldName);
 
         //Field was not found in TypeGraphQL
         if (!fieldMetadata) {
@@ -38,7 +17,7 @@ export abstract class GraphqlTypeOrmMapper {
 
     public static mapTypeOrmColumnMetadata(target: Function | EntitySchema<unknown> | string, fieldName: string) {
         const entityMetadata = getConnection().getMetadata(target);
-        const fieldMetadata = this.getGraphqlFieldMetadata(target, fieldName);
+        const fieldMetadata = GraphqlMetadata.getFieldMetadata(target, fieldName);
 
         //Field was not found in TypeGraphQL
         if (!fieldMetadata) {
