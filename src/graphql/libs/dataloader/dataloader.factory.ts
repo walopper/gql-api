@@ -28,7 +28,7 @@ export class DataloaderFactory<K, V> {
 
         options = this.getDefaultOptions(options);
 
-        if (options.typeORM) {
+        if (options.typeOrm) {
             // @ts-ignore
             batchFunction = this.getTypeORMBatchFunction(info, batchFunction, options);
         } else {
@@ -82,16 +82,22 @@ export class DataloaderFactory<K, V> {
          *          .getMany();
          *   }
          */
-        const pivotTableEntity: Function | undefined =
-            typeof options.typeORM !== 'boolean' ? options.typeORM?.pivotTableEntity : undefined;
+        let pivotTableEntity: string | undefined;
         let relationType: string | null = null;
+        let parentRelationField: string = options.typeOrm;
         let parentRelationProperty: string | undefined;
         let returnRelationProperty: string | undefined;
+
+        //Has pivot table
+        if (options.typeOrm.indexOf('.') > 0) {
+            parentRelationField = options.typeOrm.substring(0, options.typeOrm.indexOf('.'));
+            pivotTableEntity = options.typeOrm.substring(options.typeOrm.indexOf('.'));
+        }
 
         /**
          * Many to Many with Pivot Table
          * How to use?
-         * @loader({typeORM: {pivotTableEntity: MessageTagPivot}})
+         * @loader({typeORM: 'Message.MessageTagPivot'})
          * [QueryBuilder].innerJoinAndMapMany('tag.MessageTagPivot', MessageTagPivot, 'pivot', 'pivot.tag_id = tag.id AND pivot.message_id IN (:...ids)', { ids: messageIds })
          */
         if (pivotTableEntity) {
@@ -112,7 +118,7 @@ export class DataloaderFactory<K, V> {
         else {
             const relationMetadata = GraphqlTypeOrmMapper.mapTypeOrmRelationMetadata(
                 info.parentType.toString(),
-                info.fieldName,
+                parentRelationField,
             );
 
             if (relationMetadata && !relationMetadata.isManyToMany) {
@@ -143,8 +149,14 @@ export class DataloaderFactory<K, V> {
             const uniqueReturnEntitiesKeys = _.uniq(returnEntitiesKeys);
             const result = await wrappedBatchFunction(uniqueReturnEntitiesKeys);
 
-            //AutoRelay
-            if (options.autoRelay) {
+            //Result is a Connection Cursor
+            if (
+                Array.isArray(result) &&
+                Array.isArray(result[0]) &&
+                result[0].length === 2 &&
+                Array.isArray(result[0][0]) &&
+                typeof result[0][1] === 'number'
+            ) {
                 const uniqueReturnEntitiesKeysMap = _.invert(uniqueReturnEntitiesKeys);
                 return returnEntitiesKeys.map(key => {
                     return result[uniqueReturnEntitiesKeysMap[key] as any];
@@ -160,7 +172,7 @@ export class DataloaderFactory<K, V> {
                 //MessageTagPivot
                 return returnEntitiesKeys.map(key => {
                     return _.filter(result, (e: ObjectLiteral) => {
-                        return _.find(e[pivotTableEntity.name], {
+                        return _.find(e[pivotTableEntity], {
                             [returnRelationProperty as string]: key,
                         });
                     });

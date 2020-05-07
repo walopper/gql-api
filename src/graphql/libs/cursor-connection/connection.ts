@@ -137,8 +137,14 @@ export const createConnection = async <TNode>({
             offset = 0;
         }
     }
-    console.log('Test', await paginate({ ...paginationArgs, offset, limit }));
-    const [nodes, totalCount] = await paginate({ ...paginationArgs, offset, limit });
+
+    const result = await paginate({ ...paginationArgs, offset, limit });
+
+    if (!Array.isArray(result)) {
+        throw new Error('Result undefined');
+    }
+
+    const [nodes, totalCount] = result;
 
     const pageInfo: IPageInfo = {
         startCursor: Cursor.create(connectionClass.name, offset),

@@ -11,6 +11,10 @@ export abstract class BaseEntityService<Entity> {
     protected authUser: any;
 
     constructor(@Inject(CONTEXT) context) {
+        if (!context.req.user) {
+            throw Error('Need authenticated user');
+        }
+
         this.authUser = context.req.user;
     }
 

@@ -9,6 +9,7 @@ import {
     ComparisionOperatorsInput,
     ComparisionOperatorsValue,
 } from '../inputs/query-where-comparision-operators.input';
+import { IQueryWhereInput } from '../interfaces/query-where-input.interface';
 
 export type QueryWhereConditionOperator = 'AND' | 'OR';
 
@@ -114,32 +115,25 @@ export abstract class QueryWhereHelper {
             throw Error('Test3');
         }
 
-        const comparisonOperator = Object.keys(whereCondition)[0] as string;
-        const comparisonValue = whereCondition[comparisonOperator] as ComparisionOperatorsValue;
-
         const conditionField = `${alias}.${ormColumnMetadata.propertyName}`;
 
-        this.applyComparisionOperator(
-            conditionField,
-            whereExpression,
-            conditionOperator,
-            comparisonOperator,
-            comparisonValue,
-        );
+        this.applyComparisionOperator(whereExpression, conditionField, conditionOperator, whereCondition);
 
         return true;
     }
 
     public static applyComparisionOperator(
-        conditionField: string,
         whereExpression: WhereExpression,
+        conditionField: string,
         conditionOperator: QueryWhereConditionOperator,
-        comparisonOperator: string,
-        comparisonValue: ComparisionOperatorsValue,
+        whereCondition: ComparisionOperatorsInput,
     ): void {
         let condition;
         let params;
         const paramName = _.uniqueId('param');
+
+        const comparisonOperator = Object.keys(whereCondition)[0] as string;
+        let comparisonValue = whereCondition[comparisonOperator] as ComparisionOperatorsValue;
 
         //Cast boolean values to "0" and "1"
         if (typeof comparisonValue === 'boolean') {

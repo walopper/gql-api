@@ -5,9 +5,5 @@ import {
 } from '../inputs/query-where-comparision-operators.input';
 
 export interface IQueryWhereInput {
-    [key: string]:
-        | StringComparisionOperatorsInput
-        | NumberComparisionOperatorsInput
-        | BooleanComparisionOperatorsInput
-        | undefined;
+    [key: string]: StringComparisionOperatorsInput | NumberComparisionOperatorsInput | BooleanComparisionOperatorsInput;
 }

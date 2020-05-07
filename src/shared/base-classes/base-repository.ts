@@ -109,25 +109,35 @@ export abstract class BaseRepository<Entity> extends Repository<Entity> {
 
                     relatedEntityRepository.queryOrderByHelper(query, relationAliasName, [relationOrderByOptions]);
                 }
-            } else {
-                //Try to match entity column
-                const ormColumnMetadata = GraphqlTypeOrmMapper.mapTypeOrmColumnMetadata(
-                    this.metadata.target,
-                    orderByProperty,
-                );
-                if (ormColumnMetadata) {
-                    const orderByDirection = option[orderByProperty] as QueryOrderByDirection;
-                    const selectionAliasName = `${alias}.${orderByProperty}`;
 
-                    query.addSelect(`${alias}.${orderByProperty}`);
-
-                    if (orderByDirection === QueryOrderByDirection.ASC) {
-                        query.addOrderBy(selectionAliasName, 'ASC');
-                    } else if (orderByDirection === QueryOrderByDirection.DESC) {
-                        query.addOrderBy(selectionAliasName, 'DESC');
-                    }
-                }
+                return;
             }
+
+            //Try to match entity column
+            const ormColumnMetadata = GraphqlTypeOrmMapper.mapTypeOrmColumnMetadata(
+                this.metadata.target,
+                orderByProperty,
+            );
+
+            if (ormColumnMetadata) {
+                const orderByDirection = option[orderByProperty] as QueryOrderByDirection;
+                const selectionAliasName = `${alias}.${orderByProperty}`;
+
+                query.addSelect(selectionAliasName);
+                query.addOrderBy(selectionAliasName, orderByDirection);
+            }
+
+            //Not found
+            //Try to call `queryOrderByHelperFor{orderByProperty}`
+            const customPropertyMethodName = 'queryOrderByHelperFor' + _.capitalize(_.camelCase(orderByProperty));
+            const orderByDirection = option[orderByProperty] as QueryOrderByDirection;
+
+            if (typeof this[customPropertyMethodName] === 'function') {
+                this[customPropertyMethodName](alias, query, orderByDirection);
+                return;
+            }
+
+            throw new Error(`Could not apply ${this.metadata.targetName}.${orderByProperty} order by`);
         }
     }
 
@@ -198,5 +208,16 @@ export abstract class BaseRepository<Entity> extends Repository<Entity> {
         ) {
             return;
         }
+
+        //Not found
+        //Try to call `queryWhereHelperFor${whereProperty}`
+        const customPropertyMethodName = 'queryWhereHelperFor' + _.capitalize(_.camelCase(whereProperty));
+
+        if (typeof this[customPropertyMethodName] === 'function') {
+            this[customPropertyMethodName](alias, whereExpression, conditionOperator, whereCondition);
+            return;
+        }
+
+        throw new Error(`Could not apply ${this.metadata.targetName}.${whereProperty} where filter`);
     }
 }
