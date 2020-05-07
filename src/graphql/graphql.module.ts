@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { DataloaderPlugin } from './libs/dataloader/dataloader.plugin';
 import { GraphQLModule as NestGraphQLModule } from '@nestjs/graphql';
 import './enums';
+import { formatError } from './utils/graphql-error-handler';
 
 @Module({
     imports: [
@@ -15,8 +16,9 @@ import './enums';
 
                 return ctx;
             },
+            formatError
         }),
     ],
     providers: [DataloaderPlugin],
 })
-export class GraphQLModule {}
+export class GraphQLModule { }

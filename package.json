@@ -25,6 +25,7 @@
     "@nestjs/graphql": "^7.3.7",
     "@nestjs/platform-express": "^7.0.1",
     "@nestjs/typeorm": "^7.0.0",
+    "apollo-errors": "^1.9.0",
     "apollo-server-express": "^2.13.0",
     "dataloader": "^2.0.0",
     "graphql": "^15.0.0",
