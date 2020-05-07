@@ -1,6 +1,6 @@
 import { InputType, Field } from '@nestjs/graphql';
 import { CompanyQueryWhereInput } from '../../company/inputs/company-query-where.input';
-import { BaseQueryWhereInput } from '../../../shared/base-classes/base-query-where.input';
+import { BaseQueryWhereInput } from '../../../shared/base-classes/base-query-where-input';
 import {
     NumberComparisionOperatorsInput,
     StringComparisionOperatorsInput,

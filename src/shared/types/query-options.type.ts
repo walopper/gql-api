@@ -1,5 +1,5 @@
-import { BaseQueryWhereInput } from '../base-classes/base-query-where.input';
-import { BaseQueryOrderByInput } from '../base-classes/base-query-orderby.input';
+import { BaseQueryWhereInput } from '../base-classes/base-query-where-input';
+import { BaseQueryOrderByInput } from '../base-classes/base-query-orderby-input';
 
 export type QueryOptions<
     T extends BaseQueryWhereInput = BaseQueryWhereInput,

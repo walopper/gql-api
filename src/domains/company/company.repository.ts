@@ -1,6 +1,6 @@
 import { EntityRepository, QueryRunner } from 'typeorm';
 import { Company } from './company.entity';
-import { BaseRepository } from '../../shared/base-classes/base.repository';
+import { BaseRepository } from '../../shared/base-classes/base-repository';
 import { SelectQueryBuilder } from '../../shared/utils/select-query-builder';
 
 @EntityRepository(Company)

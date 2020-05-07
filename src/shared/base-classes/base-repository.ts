@@ -11,10 +11,10 @@ import {
 } from 'typeorm';
 //import logger from '../../utils/logger';
 import { SelectQueryBuilder as SelectQueryBuilderWrapper } from '../utils/select-query-builder';
-import { BaseQueryWhereInput, QueryWhereInputValue } from './base-query-where.input';
+import { BaseQueryWhereInput, QueryWhereInputValue } from './base-query-where-input';
 import { ComparisionOperatorsInput } from '../../graphql/inputs/query-where-comparision-operators.input';
 import { QueryWhereConditionOperator, QueryWhereHelper } from '../../graphql/utils/query-where-helper';
-import { BaseQueryOrderByInput } from './base-query-orderby.input';
+import { BaseQueryOrderByInput } from './base-query-orderby-input';
 import { QueryOrderByDirection } from '../enums/query-orderby-direction.enum';
 import { GraphqlTypeOrmMapper } from '../../graphql/utils/graphql-typeorm-mapper.util';
 import { QueryOptions, QueryPaginationOptions } from '../types/query-options.type';

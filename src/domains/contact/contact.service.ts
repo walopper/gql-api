@@ -3,7 +3,7 @@ import { Contact } from './contact.entity';
 import { ContactQueryWhereInput } from './inputs/contact-query-where.input';
 import { ContactQueryOrderByInput } from './inputs/contact-query-orderby.input';
 import { InjectRepository } from '@nestjs/typeorm';
-import { BaseEntityService } from '../../shared/base-classes/base-entity.service';
+import { BaseEntityService } from '../../shared/base-classes/base-entity-service';
 import { QueryOptions } from '../../shared/types/query-options.type';
 import { Injectable, Scope } from '@nestjs/common';
 

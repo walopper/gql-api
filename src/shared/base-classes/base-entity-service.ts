@@ -1,8 +1,8 @@
 import { QueryOptions } from '../types/query-options.type';
-import { BaseRepository } from './base.repository';
+import { BaseRepository } from './base-repository';
 import { SelectQueryBuilder } from '../utils/select-query-builder';
-import { BaseQueryWhereInput } from './base-query-where.input';
-import { BaseQueryOrderByInput } from './base-query-orderby.input';
+import { BaseQueryWhereInput } from './base-query-where-input';
+import { BaseQueryOrderByInput } from './base-query-orderby-input';
 import { Inject } from '@nestjs/common';
 import { CONTEXT } from '@nestjs/graphql';
 
