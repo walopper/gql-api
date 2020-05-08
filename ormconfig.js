@@ -1,3 +1,4 @@
+/* eslint-disable */
 const url = require('url');
 
 const dbConnParams = url.parse(process.env.DATABASE_URL);

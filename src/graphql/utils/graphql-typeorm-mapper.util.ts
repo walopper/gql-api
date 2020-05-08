@@ -8,6 +8,13 @@ export abstract class GraphqlTypeOrmMapper {
 
         //Field was not found in TypeGraphQL
         if (!fieldMetadata) {
+            //Try to find the relation directly in TypeORM
+            const relationMetadata = entityMetadata.findRelationWithPropertyPath(fieldName);
+
+            if (relationMetadata) {
+                return relationMetadata;
+            }
+
             return undefined;
         }
 

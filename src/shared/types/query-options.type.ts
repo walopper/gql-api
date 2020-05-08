@@ -11,10 +11,8 @@ export type QueryOptions<
 };
 
 export type QueryPaginationOptions = {
-    first?: number;
-    last?: number;
-    after?: string;
-    before?: string;
     offset?: number;
     limit?: number;
+    direction?: 'forward' | 'backward';
+    nodeInfo?: any;
 };

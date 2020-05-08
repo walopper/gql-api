@@ -57,7 +57,7 @@ export class ContactResolver {
     }
 
     @ResolveField(type => Company, { name: 'company', nullable: true })
-    async getCompany(@Loader({ typeORM: true }) loader: DataloaderFn<number[], Company>) {
+    async getCompany(@Loader({ typeOrm: 'Company' }) loader: DataloaderFn<number[], Company>): Promise<Company> {
         //Dataloader Batch
         return loader(async (companiesIds: number[]) => {
             return this.companyService.getList({ where: { id: { _in: companiesIds } } });

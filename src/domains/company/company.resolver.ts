@@ -9,6 +9,7 @@ import { DataloaderFn, Loader } from '../../graphql/libs/dataloader';
 import { Inject, Injectable } from '@nestjs/common';
 import { Paginate, PaginateFn } from '../../graphql/libs/cursor-connection/paginate.decorator';
 import { CompanyListArgs } from './args/company-list.args';
+import { ContactListArgs } from '../contact/args/contact-list.args';
 
 @Injectable()
 @Resolver(of => Company)
@@ -22,44 +23,36 @@ export class CompanyResolver {
     @Query(type => CompanyConnection, { name: 'companies' })
     async getCompanies(
         @Paginate() paginate: PaginateFn<Company>,
-        @Args() listArgs: CompanyListArgs,
+        @Args() args: CompanyListArgs,
     ): Promise<[Company[], number]> {
         return paginate(pagination =>
             this.companyService.getListAndCount({
                 pagination,
-                where: listArgs.where,
-                orderBy: listArgs.order_by,
+                where: args.where,
+                orderBy: args.order_by,
             }),
         );
     }
 
     @ResolveField(type => ContactConnection, { name: 'contacts' })
     async getContacts(
-        @Parent() company: Company,
-        @Loader({ typeORM: true, autoRelay: true }) loader: DataloaderFn<number[], Contact[]>,
-        @Args('first', { nullable: true }) first?: number,
-        @Args('last', { nullable: true }) last?: number,
-        @Args('before', { nullable: true }) before?: string,
-        @Args('after', { nullable: true }) after?: string,
-        @Args('where', { nullable: true }) where?: ContactQueryWhereInput,
-        @Args('order_by', { type: () => [ContactQueryOrderByInput], nullable: true })
-        orderBy?: ContactQueryOrderByInput[],
-    ) {
-        return [];
-        return await loader(async (companiesIds: number[]) => {
-            return [];
-            /*
-            return Promise.all(
-                companiesIds.map((companyId) => {
-                    where = { company_id: { _eq: companyId } };
-                    return container.get(ContactService).getListAndCount({
-                        pagination: { first, last, before, after },
-                        where,
-                        orderBy,
-                    });
-                }),
-            );
-            */
+        @Loader({ typeOrm: 'Contacts' }) loader: DataloaderFn<number[], [Contact[], number]>,
+        @Paginate() paginate: PaginateFn<Contact>,
+        @Args() args: ContactListArgs,
+    ): Promise<[Contact[], number]> {
+        return paginate(async pagination => {
+            return loader(async (companiesIds: number[]) => {
+                return Promise.all(
+                    companiesIds.map(companyId => {
+                        args.where = { company_id: { _eq: companyId } };
+                        return this.contactService.getListAndCount({
+                            pagination,
+                            where: args.where,
+                            orderBy: args.order_by,
+                        });
+                    }),
+                );
+            });
         });
     }
 }
