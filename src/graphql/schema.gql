@@ -5,10 +5,10 @@
 """Provides info abou the current page"""
 type PageInfo {
   """Cursor referencing the beginning of the page"""
-  startCursor: String!
+  startCursor: String
 
   """Cursor referencing the end of the page"""
-  endCursor: String!
+  endCursor: String
   hasPreviousPage: Boolean!
   hasNextPage: Boolean!
 }

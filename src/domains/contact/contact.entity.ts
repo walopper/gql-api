@@ -2,7 +2,7 @@ import { Field, ID, ObjectType, registerEnumType } from '@nestjs/graphql';
 import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Company } from '../company/company.entity';
 import { EmailAddress } from '../../graphql/scalars/email-address.scalar';
-import { Connection } from '../../graphql/libs/cursor-connection/connection';
+import { Connection } from '../../graphql/libs/cursor-connection/connection.type';
 
 enum ContactSex {
     M = 'M',
@@ -138,6 +138,10 @@ export class Contact extends BaseEntity {
 
     @Column()
     deleted_at: Date;
+
+    getConnectionCursorInfo() {
+        return { id: this.id };
+    }
 }
 
 @ObjectType()

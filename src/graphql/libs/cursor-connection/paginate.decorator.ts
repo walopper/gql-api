@@ -1,7 +1,7 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { GraphqlMetadata } from '../../utils/graphql-metadata.util';
-import { createConnection, ICreateConnectionOptions } from './connection';
+import { createConnection, ICreateConnectionOptions } from './create-connection.function';
 
 export const Paginate = createParamDecorator(<TNode>(data: any, ctx: ExecutionContext) => {
     const resolverData = GqlExecutionContext.create(ctx);

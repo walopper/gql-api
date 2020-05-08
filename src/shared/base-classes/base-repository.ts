@@ -11,7 +11,7 @@ import {
 } from 'typeorm';
 //import logger from '../../utils/logger';
 import { SelectQueryBuilder as SelectQueryBuilderWrapper } from '../utils/select-query-builder';
-import { BaseQueryWhereInput, QueryWhereInputValue } from './base-query-where-input';
+import { BaseQueryWhereInput } from './base-query-where-input';
 import { ComparisionOperatorsInput } from '../../graphql/inputs/query-where-comparision-operators.input';
 import { QueryWhereConditionOperator, QueryWhereHelper } from '../../graphql/utils/query-where-helper';
 import { BaseQueryOrderByInput } from './base-query-orderby-input';
@@ -44,7 +44,7 @@ export abstract class BaseRepository<Entity> extends Repository<Entity> {
         }
 
         if (options.pagination) {
-            this.queryPaginationHelper(queryBuilder, options.pagination);
+            this.queryPaginationHelper(queryBuilder, queryBuilder.alias, options.pagination);
         }
 
         if (options.where) {
@@ -58,19 +58,32 @@ export abstract class BaseRepository<Entity> extends Repository<Entity> {
         return queryBuilder;
     }
 
-    public queryPaginationHelper(query: SelectQueryBuilder<unknown>, options: QueryPaginationOptions): void {
-        // console.log('PAGINATION', options);
-        if (options?.first && options.first > 100) {
-            //throw new ServerError(WHERE_INPUT.QUERY_TAKE_MAX_REACHED);
-        }
-        query.skip(options.offset || 0);
-        query.take(options.limit || 20);
-    }
-
-    public queryOrderByHelper<U extends BaseQueryOrderByInput>(
+    public queryPaginationHelper(
         query: SelectQueryBuilder<unknown>,
         alias: string,
-        options: U[] = [],
+        options: QueryPaginationOptions,
+    ): void {
+        const offset = options.offset !== undefined ? options.offset : 0;
+        let limit = options.limit !== undefined ? options.limit : 20;
+
+        // console.log('PAGINATION', options);
+        if (limit > 50) {
+            //throw new ServerError(WHERE_INPUT.QUERY_TAKE_MAX_REACHED);
+        }
+
+        //Little hack to prevent fetching too many items when we reach the limit of an backward pagination
+        if (limit === 0) {
+            limit = 1;
+        }
+
+        query.skip(offset);
+        query.take(limit);
+    }
+
+    public queryOrderByHelper(
+        query: SelectQueryBuilder<unknown>,
+        alias: string,
+        options: BaseQueryOrderByInput[] = [],
     ): void {
         for (const option of options) {
             //Every option should only have one column in the object literal
@@ -80,7 +93,7 @@ export abstract class BaseRepository<Entity> extends Repository<Entity> {
             }
 
             //Property name of orderBy option
-            const orderByProperty = (Object.keys(option)[0] as keyof U) as string;
+            const orderByProperty = Object.keys(option)[0];
 
             //Try to match entity relation
             const ormRelationMetadata = GraphqlTypeOrmMapper.mapTypeOrmRelationMetadata(
@@ -141,24 +154,25 @@ export abstract class BaseRepository<Entity> extends Repository<Entity> {
         }
     }
 
-    public queryWhereHelper<U extends BaseQueryWhereInput>(
+    public queryWhereHelper(
         query: SelectQueryBuilder<unknown>,
         alias: string,
-        option: U,
+        option: BaseQueryWhereInput,
         conditionOperator: QueryWhereConditionOperator = 'AND',
         whereExpression?: WhereExpression,
     ) {
-        //Every option should only have one column in the object literal
+        //If the option have more than one column in the object literal then group them in an '_and' condition operator
         if (Object.keys(option).length !== 1) {
-            //logger.error('Every option should only have one column in the object literal');
-            throw Error('Test2');
+            option = {
+                _and: _.map(option, (v, k) => ({ [k]: v })),
+            };
         }
 
         const targetEntityClass = this.metadata.target;
 
         //Property name of orderBy option
-        const whereProperty = (Object.keys(option)[0] as keyof U) as string;
-        const whereCondition = option[whereProperty] as QueryWhereInputValue;
+        const whereProperty = Object.keys(option)[0];
+        const whereCondition = option[whereProperty];
 
         //Set where expression
         if (!whereExpression) {

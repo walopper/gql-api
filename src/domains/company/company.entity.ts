@@ -3,7 +3,7 @@ import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
 import { Contact } from '../contact/contact.entity';
 import { IInstitution } from '../institution/institution.interface';
 import { AInstitution } from '../institution/institution.abstract';
-import { Connection } from '../../graphql/libs/cursor-connection/connection';
+import { Connection } from '../../graphql/libs/cursor-connection/connection.type';
 
 @ObjectType({ implements: IInstitution })
 @Entity({ name: 'company' })

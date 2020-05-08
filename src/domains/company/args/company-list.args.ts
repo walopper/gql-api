@@ -1,5 +1,5 @@
 import { ArgsType, Field } from '@nestjs/graphql';
-import { PaginationArgs } from '../../../graphql/libs/cursor-connection/connection';
+import { PaginationArgs } from '../../../graphql/libs/cursor-connection/connection.type';
 import { CompanyQueryWhereInput } from '../inputs/company-query-where.input';
 import { CompanyQueryOrderByInput } from '../inputs/company-query-orderby.input';
 
