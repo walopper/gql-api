@@ -1,8 +1,9 @@
-import { Module } from '@nestjs/common';
+import { Module, MiddlewareConsumer } from '@nestjs/common';
 import { DataloaderPlugin } from './libs/dataloader/dataloader.plugin';
 import { GraphQLModule as NestGraphQLModule } from '@nestjs/graphql';
 import './enums';
 import { formatError } from './utils/graphql-error-handler';
+import { AuthorizationMiddleware } from '../rest/auth/auth.middlewar';
 
 @Module({
     imports: [
@@ -21,4 +22,10 @@ import { formatError } from './utils/graphql-error-handler';
     ],
     providers: [DataloaderPlugin],
 })
-export class GraphQLModule { }
+export class GraphQLModule {
+    configure(consumer: MiddlewareConsumer) {
+        consumer
+            .apply(AuthorizationMiddleware)
+            .forRoutes('/graphql');
+    }
+}

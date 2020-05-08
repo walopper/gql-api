@@ -2,7 +2,7 @@ import { ObjectType, Field, Int, ArgsType } from '@nestjs/graphql';
 import { Cursor } from './cursor';
 
 export interface ClassType<T = any> {
-    new (...args: any[]): T;
+    new(...args: any[]): T;
 }
 
 export interface IPageInfo {
@@ -39,7 +39,7 @@ export interface IConnection<TNode> {
 }
 
 export interface IConnectionClass<TNode> {
-    new (totalCount: number, pageInfo: IPageInfo, edges: IEdge<TNode>[]): IConnection<TNode>;
+    new(totalCount: number, pageInfo: IPageInfo, edges: IEdge<TNode>[]): IConnection<TNode>;
 }
 
 export const Connection = <TNode>(TNodeClass: ClassType<TNode>): IConnectionClass<TNode> => {
@@ -137,7 +137,7 @@ export const createConnection = async <TNode>({
             offset = 0;
         }
     }
-    console.log('Test', await paginate({ ...paginationArgs, offset, limit }));
+    // console.log('Test', await paginate({ ...paginationArgs, offset, limit }));
     const [nodes, totalCount] = await paginate({ ...paginationArgs, offset, limit });
 
     const pageInfo: IPageInfo = {

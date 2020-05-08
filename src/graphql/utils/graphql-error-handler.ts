@@ -8,7 +8,7 @@ import { _SERVER_ERRORS } from '../../config/errorCodes';
  * @param error
  */
 export const formatError = (error: GraphQLError): any => {
-    console.log('---> Original error: ', error);
+    // console.log('---> Original error: ', error);
 
     // const { code, type, message, subcode } = getErrorType(error);
     let subcode = error.extensions?.subcode;
