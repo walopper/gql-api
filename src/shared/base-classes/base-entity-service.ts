@@ -18,9 +18,14 @@ export abstract class BaseEntityService<Entity> {
         this.authUser = context.req.user;
     }
 
+    protected abstract checkFieldsAuthorization(fields: string[]): void;
+
     protected getQueryBuilder<T extends BaseQueryWhereInput, U extends BaseQueryOrderByInput>(
         queryOptions: QueryOptions<T, U>,
     ): SelectQueryBuilder<Entity> {
+        //Validate that the user have authorization for the requested fields
+        this.checkFieldsAuthorization(queryOptions.fields);
+
         return this.repository.createQueryBuilderHelper(queryOptions);
     }
 

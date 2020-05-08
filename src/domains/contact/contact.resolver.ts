@@ -7,6 +7,7 @@ import { CompanyService } from '../company/company.service';
 import { Inject } from '@nestjs/common';
 import { ContactService } from './contact.service';
 import { ContactListArgs } from './args/contact-list.args';
+import { Fields } from '../../graphql/decorators/fields.decorator';
 //import { ServerError } from '../../utils/errorHandler';
 //import { WHERE_INPUT } from '../../config/errorCodes';
 
@@ -21,10 +22,12 @@ export class ContactResolver {
     @Query(type => ContactConnection, { name: 'contacts' })
     async getContacts(
         @Paginate() paginate: PaginateFn<Contact>,
+        @Fields() fields: string[],
         @Args() listArgs: ContactListArgs,
     ): Promise<[Contact[], number]> {
         return paginate(pagination =>
             this.contactService.getListAndCount({
+                fields,
                 pagination,
                 where: listArgs.where,
                 orderBy: listArgs.order_by,
@@ -57,10 +60,13 @@ export class ContactResolver {
     }
 
     @ResolveField(type => Company, { name: 'company', nullable: true })
-    async getCompany(@Loader({ typeOrm: 'Company' }) loader: DataloaderFn<number[], Company>): Promise<Company> {
+    async getCompany(
+        @Loader({ typeOrm: 'Company' }) loader: DataloaderFn<number[], Company>,
+        @Fields() fields: string[],
+    ): Promise<Company> {
         //Dataloader Batch
         return loader(async (companiesIds: number[]) => {
-            return this.companyService.getList({ where: { id: { _in: companiesIds } } });
+            return this.companyService.getList({ fields, where: { id: { _in: companiesIds } } });
         });
     }
 }

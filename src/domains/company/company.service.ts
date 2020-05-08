@@ -8,4 +8,8 @@ import { BaseEntityService } from '../../shared/base-classes/base-entity-service
 export class CompanyService extends BaseEntityService<Company> {
     @InjectRepository(CompanyRepository)
     protected readonly repository: CompanyRepository;
+
+    protected checkFieldsAuthorization(fields: string[]): void {
+        return;
+    }
 }

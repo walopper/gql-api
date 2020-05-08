@@ -10,8 +10,12 @@ import { QueryOrderByDirection } from '../../shared/enums/query-orderby-directio
 export class CompanyRepository extends BaseRepository<Company> {
     public createQueryBuilder(alias?: string, queryRunner?: QueryRunner) {
         const query: SelectQueryBuilder<Company> = super.createQueryBuilder(alias, queryRunner);
-        query.innerJoinAndSelect(`${query.alias}.Institution`, 'institution');
+        query.innerJoin(`${query.alias}.Institution`, 'institution');
         return query;
+    }
+
+    public queryFieldsHelperForName(alias: string, query: SelectQueryBuilder<unknown>) {
+        query.addSelect('institution.name');
     }
 
     public queryOrderByHelperForName(

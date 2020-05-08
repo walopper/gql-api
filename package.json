@@ -29,6 +29,7 @@
     "apollo-server-express": "^2.13.0",
     "dataloader": "^2.0.0",
     "graphql": "^15.0.0",
+    "graphql-parse-resolve-info": "^4.7.0",
     "graphql-tools": "^5.0.0",
     "json-stable-stringify": "^1.0.1",
     "mysql": "^2.18.1",

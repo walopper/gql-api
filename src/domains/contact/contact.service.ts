@@ -5,12 +5,20 @@ import { ContactQueryOrderByInput } from './inputs/contact-query-orderby.input';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BaseEntityService } from '../../shared/base-classes/base-entity-service';
 import { QueryOptions } from '../../shared/types/query-options.type';
-import { Injectable, Scope } from '@nestjs/common';
+import { Injectable, Scope, UnauthorizedException } from '@nestjs/common';
 
 @Injectable({ scope: Scope.REQUEST })
 export class ContactService extends BaseEntityService<Contact> {
     @InjectRepository(ContactRepository)
     protected readonly repository: ContactRepository;
+
+    protected checkFieldsAuthorization(fields: string[]): void {
+        if (fields.indexOf('sex') > 0) {
+            throw new UnauthorizedException('No tiene permiso del field sex');
+        }
+
+        return;
+    }
 
     protected getQueryBuilder(queryOptions: QueryOptions<ContactQueryWhereInput, ContactQueryOrderByInput>) {
         const query = super.getQueryBuilder(queryOptions);
