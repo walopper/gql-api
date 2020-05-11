@@ -1,5 +1,6 @@
 export interface Payload {
-    token: string;
+    type: string;
+    userId: number;
     iat?: number;
     expiresIn?: string;
 }

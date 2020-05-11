@@ -2,13 +2,11 @@ import { UserService } from './../../domains/user/user.service';
 
 import { Body, Controller, Post, Get, UnauthorizedException, ForbiddenException } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { Payload } from '@shared/types/payload';
 
 export interface LoginDTO {
     username: string;
     password: string;
 }
-
 
 @Controller('auth')
 export class AuthController {
@@ -24,16 +22,14 @@ export class AuthController {
             throw new ForbiddenException("Login incorrect");
         }
 
-        const sessionToken = this.authService.createToken(user);
+        // Save user data in cache storage
+        this.authService.setUserDataInCache(user);
 
-        // TODO: almacenar token en redis
+        const jwtToken = await this.authService.signPayload(user.id);
 
-        const payload: Payload = {
-            type: "user" //(USER, PUBLIC_API, PRIVATE_API)
-            userId: user.id,
-            //token: sessionToken
-        };
-        const jwtToken = await this.authService.signPayload(payload);
+        // Save user jwt token in cache storage
+        this.authService.saveUserJwtTokenInCache(user.id, jwtToken);
+
         return { token: jwtToken };
     }
 }

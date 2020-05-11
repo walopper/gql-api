@@ -1,4 +1,6 @@
+import { redisOptions } from './config/redisConnectionOptions';
 import { Module } from '@nestjs/common';
+import { RedisModule } from 'nestjs-redis'
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { GraphQLModule } from './graphql/graphql.module';
 import { DomainsModule } from './domains/domains.module';
@@ -10,7 +12,8 @@ import { AppController } from './app.controller';
         TypeOrmModule.forRoot(),
         GraphQLModule,
         DomainsModule,
-        AuthModule
+        AuthModule,
+        RedisModule.register(redisOptions)
     ],
     controllers: [AppController]
 })

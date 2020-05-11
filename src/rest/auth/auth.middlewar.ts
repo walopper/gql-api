@@ -8,6 +8,8 @@ export class AuthorizationMiddleware implements NestMiddleware {
             return next();
         }
 
+        // TODO validate token ?
+
         throw new UnauthorizedException("No autorizado!");
     }
 }

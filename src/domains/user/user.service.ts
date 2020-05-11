@@ -1,4 +1,5 @@
-import { Injectable } from '@nestjs/common';
+import { RedisService } from 'nestjs-redis';
+import { Injectable, Inject } from '@nestjs/common';
 import bcrypt from 'bcrypt';
 
 type User = any;
@@ -7,10 +8,13 @@ type User = any;
 export class UserService {
     private readonly users: User[];
 
-    constructor() {
+    // @Inject(RedisService)
+    // private redisService: RedisService;
+
+    constructor(private redisService: RedisService) {
         this.users = [
             {
-                userId: 1,
+                id: 1,
                 username: 'ale',
                 password: '123456',
             }

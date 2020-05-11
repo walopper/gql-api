@@ -1,32 +1,17 @@
-// import cacheManager from 'cache-manager';
-// import redisStore from 'cache-manager-redis-store';
+import { RedisService as NestRedisService } from 'nestjs-redis';
+import { Injectable } from '@nestjs/common';
+import { Redis } from 'ioredis';
 
-// class RedisService {
-//     private client;
+@Injectable()
+export class RedisService {
+    constructor(private readonly redisService: NestRedisService) { }
 
-//     constructor() {
-//         const redisCache = cacheManager.caching({
-//             store: redisStore,
-//             // db: 0, // if multiple dbs
-//         });
+    public getKey(key: string): any {
 
-//         this.client = redisCache.store.getClient();
+    }
 
-//         this.client.on('error', (error) => {
-//             // TODO handle error here
-//             console.log(error);
-//         });
-//     }
-
-//     public getKey(key) {
-//         this.client.get(key);
-//     }
-
-//     public setKey(key) {
-//         this.client.set(key);
-//     }
-// }
-
-// export default new RedisService;
-
-
+    async getClient(): Promise<Redis> {
+        const client = await this.redisService.getClient('test')
+        return client;
+    }
+}
