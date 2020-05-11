@@ -13,7 +13,7 @@ export class ContactService extends BaseEntityService<Contact> {
     protected readonly repository: ContactRepository;
 
     protected checkFieldsAuthorization(fields: string[]): void {
-        if (fields.indexOf('sex') > 0) {
+        if (fields.indexOf('sex') !== -1) {
             throw new UnauthorizedException('No tiene permiso del field sex');
         }
 

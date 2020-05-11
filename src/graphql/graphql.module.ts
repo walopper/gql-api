@@ -16,9 +16,9 @@ import { formatError } from './utils/graphql-error-handler';
 
                 return ctx;
             },
-            formatError
+            formatError,
         }),
     ],
     providers: [DataloaderPlugin],
 })
-export class GraphQLModule { }
+export class GraphQLModule {}

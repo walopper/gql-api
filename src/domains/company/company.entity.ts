@@ -17,6 +17,7 @@ export class Company extends AInstitution {
     @Column()
     crm_is_active: boolean;
 
+    @Field(type => [Contact], { name: 'contacts' })
     @OneToMany(
         () => Contact,
         contact => contact.Company,
