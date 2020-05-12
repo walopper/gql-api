@@ -182,7 +182,7 @@ type UserEdge {
 }
 
 type Query {
-  contacts(
+  contactsByCompanyId(
     """Cursor to the item after which first n items will be taken"""
     after: String
     first: Int
@@ -192,6 +192,7 @@ type Query {
     last: Int
     where: ContactQueryWhereInput
     order_by: [ContactQueryOrderByInput!]
+    company_id: ID!
   ): ContactConnection!
   companies(
     """Cursor to the item after which first n items will be taken"""

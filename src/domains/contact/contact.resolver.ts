@@ -1,4 +1,4 @@
-import { Args, Query, ResolveField, Resolver } from '@nestjs/graphql';
+import { Args, ID, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { Paginate, PaginateFn } from '../../graphql/libs/cursor-connection/paginate.decorator';
 import { DataloaderFn, Loader } from '../../graphql/libs/dataloader';
 import { Company } from '../company/company.entity';
@@ -19,19 +19,23 @@ export class ContactResolver {
     @Inject()
     protected companyService: CompanyService;
 
-    @Query(type => ContactConnection, { name: 'contacts' })
-    async getContacts(
+    @Query(type => ContactConnection, { name: 'contactsByCompanyId' })
+    async getCompanyContacts(
         @Paginate() paginate: PaginateFn<Contact>,
         @Fields() fields: string[],
+        @Args({ name: 'company_id', type: () => ID }) companyId: Company['id'],
         @Args() listArgs: ContactListArgs,
     ): Promise<[Contact[], number]> {
         return paginate(pagination =>
-            this.contactService.getListAndCount({
-                fields,
-                pagination,
-                where: listArgs.where,
-                orderBy: listArgs.order_by,
-            }),
+            this.contactService.getListAndCount(
+                {
+                    fields,
+                    pagination,
+                    where: listArgs.where,
+                    orderBy: listArgs.order_by,
+                },
+                { companyId },
+            ),
         );
 
         /*

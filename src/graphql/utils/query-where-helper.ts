@@ -3,19 +3,18 @@ import _ from 'lodash';
 import { Brackets, getCustomRepository, getMetadataArgsStorage, SelectQueryBuilder, WhereExpression } from 'typeorm';
 //import logger from './logger';
 import { GraphqlTypeOrmMapper } from './graphql-typeorm-mapper.util';
-import { BaseRepository } from '../../shared/base-classes/base-repository';
 import { BaseQueryWhereInput } from '../../shared/base-classes/base-query-where-input';
 import {
     ComparisionOperatorsInput,
     ComparisionOperatorsValue,
 } from '../inputs/query-where-comparision-operators.input';
-import { IQueryWhereInput } from '../interfaces/query-where-input.interface';
+import { BaseEntityRepository } from '../../shared/base-classes/base-entity-repository';
 
 export type QueryWhereConditionOperator = 'AND' | 'OR';
 
 export abstract class QueryWhereHelper {
     public static applyConditionOperator(
-        customRepository: BaseRepository<unknown>,
+        customRepository: BaseEntityRepository<unknown>,
         query: SelectQueryBuilder<unknown>,
         alias: string,
         whereExpression: WhereExpression,
@@ -76,7 +75,7 @@ export abstract class QueryWhereHelper {
         if (relatedEntityRepositoryMetaData) {
             const relatedEntityRepository = getCustomRepository(
                 relatedEntityRepositoryMetaData.target,
-            ) as BaseRepository<unknown>;
+            ) as BaseEntityRepository<unknown>;
             const relationAliasName = `${alias}_${ormRelationMetadata.propertyName}`;
 
             query.innerJoin(`${alias}.${ormRelationMetadata.propertyName}`, relationAliasName);
