@@ -5,6 +5,7 @@ export type QueryOptions<
     T extends BaseQueryWhereInput = BaseQueryWhereInput,
     U extends BaseQueryOrderByInput = BaseQueryOrderByInput
 > = {
+    fields: string[];
     pagination?: QueryPaginationOptions;
     where?: T;
     orderBy?: U[];

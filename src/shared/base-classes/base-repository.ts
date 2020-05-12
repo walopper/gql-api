@@ -25,7 +25,7 @@ export abstract class BaseRepository<Entity> extends Repository<Entity> {
         queryRunner = queryRunner || this.queryRunner;
 
         const query = new SelectQueryBuilderWrapper<Entity>(this.manager.connection, queryRunner);
-        query.select(alias);
+        //query.select(alias);
         query.from(this.metadata.targetName, alias);
 
         return query;
@@ -43,6 +43,10 @@ export abstract class BaseRepository<Entity> extends Repository<Entity> {
             queryBuilder = this.createQueryBuilder();
         }
 
+        if (options.fields) {
+            this.queryFieldsHelper(queryBuilder, queryBuilder.alias, options.fields);
+        }
+
         if (options.pagination) {
             this.queryPaginationHelper(queryBuilder, queryBuilder.alias, options.pagination);
         }
@@ -56,6 +60,40 @@ export abstract class BaseRepository<Entity> extends Repository<Entity> {
         }
 
         return queryBuilder;
+    }
+
+    public queryFieldsHelper(query: SelectQueryBuilder<unknown>, alias: string, fields: string[]): void {
+        for (const field of fields) {
+            //Try to match entity relation
+            const ormRelationMetadata = GraphqlTypeOrmMapper.mapTypeOrmRelationMetadata(this.metadata.target, field);
+
+            if (ormRelationMetadata) {
+                if (ormRelationMetadata.isOwning) {
+                    query.addSelect(`${alias}.${ormRelationMetadata.joinColumns[0].propertyName}`);
+                }
+
+                continue;
+            }
+
+            //Try to match entity column
+            const ormColumnMetadata = GraphqlTypeOrmMapper.mapTypeOrmColumnMetadata(this.metadata.target, field);
+
+            if (ormColumnMetadata) {
+                query.addSelect(`${alias}.${field}`);
+                continue;
+            }
+
+            //Not found
+            //Try to call `queryFieldsHelperFor{field}`
+            const customPropertyMethodName = 'queryFieldsHelperFor' + _.capitalize(_.camelCase(field));
+
+            if (typeof this[customPropertyMethodName] === 'function') {
+                this[customPropertyMethodName](alias, query);
+                continue;
+            }
+
+            throw new Error(`Could not apply ${this.metadata.targetName}.${field} selection`);
+        }
     }
 
     public queryPaginationHelper(
@@ -123,7 +161,7 @@ export abstract class BaseRepository<Entity> extends Repository<Entity> {
                     relatedEntityRepository.queryOrderByHelper(query, relationAliasName, [relationOrderByOptions]);
                 }
 
-                return;
+                continue;
             }
 
             //Try to match entity column
@@ -147,7 +185,7 @@ export abstract class BaseRepository<Entity> extends Repository<Entity> {
 
             if (typeof this[customPropertyMethodName] === 'function') {
                 this[customPropertyMethodName](alias, query, orderByDirection);
-                return;
+                continue;
             }
 
             throw new Error(`Could not apply ${this.metadata.targetName}.${orderByProperty} order by`);

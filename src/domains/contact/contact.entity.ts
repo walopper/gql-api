@@ -21,6 +21,7 @@ export class Contact extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
+    @Field(type => Company, { name: 'company' })
     @ManyToOne(_ => Company)
     @JoinColumn({ name: 'company_id' })
     Company?: Company;

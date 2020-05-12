@@ -17,15 +17,9 @@ import { AuthorizationMiddleware } from '../rest/auth/auth.middlewar';
 
                 return ctx;
             },
-            formatError
+            formatError,
         }),
     ],
     providers: [DataloaderPlugin],
 })
-export class GraphQLModule {
-    configure(consumer: MiddlewareConsumer) {
-        consumer
-            .apply(AuthorizationMiddleware)
-            .forRoutes('/graphql');
-    }
-}
+export class GraphQLModule { }
