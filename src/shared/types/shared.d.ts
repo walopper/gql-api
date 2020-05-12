@@ -3,6 +3,10 @@ type ObjectLiteral = {
     [key: string]: any;
 };
 
+type ResponseToken = {
+    token: string
+}
+
 /** Error handler types */
 type ErrorObject = {
     message: string;

@@ -156,6 +156,31 @@ type CompanyConnection {
   edges: [CompanyEdge!]!
 }
 
+type User {
+  id: ID
+  first_name: String
+  last_name: String
+  username: String
+  last_login: String
+  last_login_attempt: String
+  sex: String
+  email: EmailAddress
+  phone: String
+  phone_ext: String
+  phone2: String
+  phone2_ext: String
+  internal_id: String
+  language: String
+  active: String
+}
+
+"""Provides User item and a cursor to its position"""
+type UserEdge {
+  """The position of this User item"""
+  cursor: String!
+  node: User!
+}
+
 type Query {
   contacts(
     """Cursor to the item after which first n items will be taken"""

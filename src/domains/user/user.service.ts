@@ -21,12 +21,9 @@ export class UserService {
         ];
     }
 
-    async findOne(username: string): Promise<User | null> {
-        const user = this.users.find(user => user.username === username);
-        return user === -1 ? null : user;
+    public hashPassword($string, $salt = null) {
+        // $global = Configure:: read('auth.salt');
+        // return sha1($global.$string.$salt);
     }
 
-    validatePassword(token: string, password: string): boolean {
-        return bcrypt.compareSync(password, token);
-    }
 }

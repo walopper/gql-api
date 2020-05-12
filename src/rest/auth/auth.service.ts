@@ -1,37 +1,87 @@
-import { Injectable } from '@nestjs/common';
+import { User } from '@//domains/user/user.entity';
+import { UserRepository } from '@//domains/user/user.repository';
+import { UserService } from '@//domains/user/user.service';
+import { Injectable, NotFoundException, Inject } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 import { Payload } from '@shared/types/payload';
 import bcrypt from 'bcrypt';
+import crypto from 'crypto';
 import { sign } from 'jsonwebtoken';
 import { RedisService } from 'nestjs-redis';
 
-
 @Injectable()
 export class AuthService {
+    @InjectRepository(UserRepository)
+    protected readonly userRepository: UserRepository;
+
+    @Inject()
+    protected readonly redisService: RedisService;
+
     constructor(
-        private redisService: RedisService,
+        // private redisService: RedisService,
     ) { }
 
-    async signPayload(userId: number) {
+    public async login(username: string, password: string): Promise<ResponseToken> {
+        const user = await this.userRepository.findOne({
+            where: {
+                username
+            }
+        });
+
+        if (!user) {
+            throw new NotFoundException('Login incorrect');
+        }
+
+        const isValidPassword = this.verifiUserPassword(user, password);
+        if (!isValidPassword) {
+            // TODO: uncomment
+            // throw new NotFoundException('Login incorrect');
+        }
+
+        this.setUserDataInCache(user);  // save current user data in cache storage
+        const jwtToken = await this.generateJwt(user.id);
+        this.saveUserJwtTokenInCache(user.id, jwtToken); // save JWT in cache storage
+
+        return { token: jwtToken };
+    }
+
+    /**
+     * Gets user data from repo and update cache storage
+     * @param userid 
+     */
+    public async refreshCache(userid: number): Promise<boolean> {
+        const user = await this.userRepository.findOne(userid);
+        return user
+            ? false
+            : this.setUserDataInCache(user);
+    }
+
+    /**
+     * match user saved password with login password.
+     * @param userModel 
+     * @param loginPassword 
+     */
+    private verifiUserPassword(userModel: User, loginPassword: string): boolean {
+        const currentHash = this.sha1(process.env.SALK + loginPassword + userModel.password_salt);
+        return currentHash && currentHash === userModel.password_hash;
+    }
+
+    private sha1(str: string): string { // TODO: move this to a utils module (?)
+        return crypto.createHash('sha1').update(str).digest('hex');
+    }
+
+    private async generateJwt(userId: number): Promise<string> {
         const payload: Payload = {
             type: "USER",
             userId
         };
-        return sign(payload, 'jwt-secret', { expiresIn: '12h' });
-    }
-
-    async validateUser({ userId }: Payload): Promise<boolean> {
-        const user = this.getFromCache(userId);
-        return !!user;
-    }
-
-    createToken(payload: any): string {
-        return bcrypt.hashSync(JSON.stringify(payload), 10);
+        return sign(payload, process.env.JWT_SECRET_KEY);
     }
 
     /**
      * save user info un cache storage
      */
-    async setUserDataInCache(user: { id: number, [key: string]: any }): Promise<boolean> { // TODO: need to define user object type (?)
+    private async setUserDataInCache(user: User): Promise<boolean> { // TODO: need to define user object type (?)
         const key = this.userDataCacheKey(user.id);
         const client = await this.redisService.getClient('api');
         return !!client.set(key, JSON.stringify(user), 'EX', 86400); // 1 day ttl
@@ -40,7 +90,7 @@ export class AuthService {
     /**
      * save user info un cache storage
      */
-    public async saveUserJwtTokenInCache(userId: number, jwtToken: string): Promise<boolean> {
+    private async saveUserJwtTokenInCache(userId: number, jwtToken: string): Promise<boolean> {
         const key = this.jwtTokenCachekey(userId);
         const client = await this.redisService.getClient('api');
         return !!client.rpush(key, jwtToken);
@@ -50,10 +100,19 @@ export class AuthService {
      * Return user data from cache storage
      * @param id 
      */
-    private async getFromCache(id: number): Promise<any> {
+    public async getFromCache(id: number): Promise<User> {
         const key = this.userDataCacheKey(id);
         const client = await this.redisService.getClient('api');
-        return client.get(key);
+        const cacheData = await client.get(key);
+
+        let user: User;
+        try {
+            user = JSON.parse(cacheData) as User;
+        } catch (error) {
+
+        }
+
+        return user;
     }
 
     /**
