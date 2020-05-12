@@ -1,13 +1,13 @@
 import { QueryRunner, WhereExpression } from 'typeorm';
-import { BaseRepository } from '../../shared/base-classes/base-repository';
 import { SelectQueryBuilder } from '../../shared/utils/select-query-builder';
 import { ComparisionOperatorsInput } from '../../graphql/inputs/query-where-comparision-operators.input';
 import { QueryWhereConditionOperator, QueryWhereHelper } from '../../graphql/utils/query-where-helper';
 import { QueryOrderByDirection } from '../../shared/enums/query-orderby-direction.enum';
 import { BaseQueryOrderByInput } from '../../shared/base-classes/base-query-orderby-input';
 import { BaseQueryWhereInput } from '../../shared/base-classes/base-query-where-input';
+import { BaseEntityRepository } from '../../shared/base-classes/base-entity-repository';
 
-export class InstitutionBaseRepository<Entity> extends BaseRepository<Entity> {
+export class InstitutionBaseRepository<Entity> extends BaseEntityRepository<Entity> {
     public createQueryBuilder(alias?: string, queryRunner?: QueryRunner) {
         const query: SelectQueryBuilder<Entity> = super.createQueryBuilder(alias, queryRunner);
         query.innerJoin(`${query.alias}.Institution`, 'institution');

@@ -1,4 +1,4 @@
-# Cosas pendientes
+## Cosas pendientes
 
 #### File Upload
 - Investigar como se pueden subir archivos usando GraphQL

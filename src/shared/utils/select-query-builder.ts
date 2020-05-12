@@ -1,7 +1,54 @@
 import _ from 'lodash';
-import { QueryRunner, SelectQueryBuilder as BaseSelectQueryBuilder } from 'typeorm';
+import { Brackets, QueryRunner, SelectQueryBuilder as BaseSelectQueryBuilder } from 'typeorm';
 
 export class SelectQueryBuilder<Entity> extends BaseSelectQueryBuilder<Entity> {
+    protected paginationWheres = [];
+
+    /**
+     * Adds new AND WHERE condition in the query builder, this condition is removed when counting the query total
+     * This was added for cursor pagination
+     * Additionally you can add parameters used in where expression.
+     */
+    whereForPagination(where: string | Brackets | ((qb: this) => string), parameters?: ObjectLiteral): this {
+        const whereItem: {
+            type: 'simple' | 'and' | 'or';
+            condition: string;
+        } = { type: 'and', condition: this.computeWhereParameter(where) };
+
+        //clear offset from query when using "whereForPagination"
+        this.skip();
+
+        this.expressionMap.wheres.push(whereItem);
+        this.paginationWheres.push(whereItem);
+        if (parameters) this.setParameters(parameters);
+        return this;
+    }
+
+    /**
+     * Hack to remove cursor pagination conditions from the query when counting results
+     */
+    protected async executeCountQuery(queryRunner: QueryRunner): Promise<number> {
+        const hasPaginationWheres = this.paginationWheres.length > 0;
+        const query = this.clone();
+
+        //Remove pagination wheres from regular where expression
+        if (hasPaginationWheres) {
+            for (const paginationWhere of this.paginationWheres) {
+                _.remove(query.expressionMap.wheres, paginationWhere);
+            }
+
+            //Clear cloned query 'paginationWheres' to prevent infinite loop
+            query.paginationWheres = [];
+        }
+
+        //Prevent RangeError: Maximum call stack size exceeded
+        if (!hasPaginationWheres) {
+            return super.executeCountQuery(queryRunner);
+        }
+
+        return query.executeCountQuery(queryRunner);
+    }
+
     async getRawMany<T = unknown>(): Promise<T[]> {
         //Remove duplicate joins
         this.removeDuplicateJoins();
@@ -42,7 +89,7 @@ export class SelectQueryBuilder<Entity> extends BaseSelectQueryBuilder<Entity> {
             const duplicateJoinsIndexes = _.chain(this.expressionMap.joinAttributes)
                 .pickBy({ entityOrProperty: joinAttribute.entityOrProperty, alias: joinAttribute.alias })
                 .keys()
-                .map((n) => parseInt(n, 10))
+                .map(n => parseInt(n, 10))
                 .value();
 
             //Select the best candidate for the Join Attribute from the duplicate values
