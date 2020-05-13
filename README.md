@@ -1,10 +1,3 @@
-## Environment variables
-
-Create a file called `.env` width the following configuration
-
-    DATABASE_URL=mysql://user:password@127.0.0.1:3306/dbName?reconnect=true
-    JWT_SECRET_KEY=<Hash or key>
-    
 ## Installation
 
 ```bash

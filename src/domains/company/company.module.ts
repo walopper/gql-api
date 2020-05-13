@@ -6,6 +6,7 @@ import { CompanyRepository } from './company.repository';
 import { Institution } from '../institution/institution.entity';
 import { ContactModule } from '../contact/contact.module';
 import { Company } from './company.entity';
+import { AuthUserModule } from '@domains/core/auth-user/auth-user.module';
 
 @Module({
     imports: [forwardRef(() => ContactModule), TypeOrmModule.forFeature([Institution, Company, CompanyRepository])],

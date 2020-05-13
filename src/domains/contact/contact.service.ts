@@ -6,9 +6,10 @@ import { ContactQueryOrderByInput } from './inputs/contact-query-orderby.input';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BaseEntityService, BaseServiceGetMethodOptions } from '../../shared/base-classes/base-entity-service';
 import { QueryOptions } from '../../shared/types/query-options.type';
-import { Injectable, Scope, UnauthorizedException } from '@nestjs/common';
+import { Inject, Injectable, Scope, UnauthorizedException } from '@nestjs/common';
 import { SelectQueryBuilder } from '../../shared/utils/select-query-builder';
 import { Company } from '../company/company.entity';
+import { AuthUserService } from '@domains/core/auth-user/auth-user.service';
 
 @Injectable({ scope: Scope.REQUEST })
 export class ContactService extends BaseEntityService<Contact, ServiceGetMethodOptions> {
@@ -20,8 +21,6 @@ export class ContactService extends BaseEntityService<Contact, ServiceGetMethodO
         queryOptions: QueryOptions<ContactQueryWhereInput, ContactQueryOrderByInput>,
         options: ServiceGetMethodOptions,
     ): Promise<void> {
-        console.log(options);
-
         //Field authorization
         if (queryOptions.fields.indexOf('sex') !== -1) {
             throw new UnauthorizedException('No tiene permiso del field sex');

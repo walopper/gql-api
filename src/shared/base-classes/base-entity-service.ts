@@ -2,9 +2,10 @@ import { QueryOptions } from '../types/query-options.type';
 import { SelectQueryBuilder } from '../utils/select-query-builder';
 import { BaseQueryWhereInput } from './base-query-where-input';
 import { BaseQueryOrderByInput } from './base-query-orderby-input';
-import { Inject } from '@nestjs/common';
+import { Inject, Injectable, Scope } from '@nestjs/common';
 import { CONTEXT } from '@nestjs/graphql';
 import { BaseEntityRepository } from './base-entity-repository';
+import { AuthUserService } from '@domains/core/auth-user/auth-user.service';
 
 export interface BaseServiceGetMethodOptions {
     [key: string]: unknown;
@@ -18,6 +19,7 @@ export interface BaseServiceUpdateMethodOptions {
     [key: string]: unknown;
 }
 
+@Injectable({ scope: Scope.REQUEST })
 export abstract class BaseEntityService<
     Entity,
     ServiceGetMethodOptions extends BaseServiceGetMethodOptions = {},
@@ -25,18 +27,9 @@ export abstract class BaseEntityService<
     ServiceUpdateMethodOptions extends BaseServiceUpdateMethodOptions = {}
 > {
     protected abstract readonly repository: BaseEntityRepository<Entity>;
-    protected authUser: any;
 
-    constructor(@Inject(CONTEXT) context) {
-        if (!context.req.headers.authorization) {
-            throw Error('Need authenticated user');
-        }
+    constructor(protected readonly authUserService: AuthUserService) {}
 
-        this.authUser = {
-            id: 1,
-            company_id: 1,
-        };
-    }
     private getQueryBuilder<T extends BaseQueryWhereInput, U extends BaseQueryOrderByInput>(
         queryOptions: QueryOptions<T, U>,
     ): SelectQueryBuilder<Entity> {

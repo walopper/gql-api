@@ -9,14 +9,13 @@
         "target": "es2018",
         "sourceMap": true,
         "outDir": "./dist",
-        "baseUrl": "./",
+        "baseUrl": "src",
         "incremental": true,
         "paths": {
-            "@shared/*": ["src/shared/*"],
-            "@domain/*": ["src/domain/*"],
-            "@utils/*": ["src/utils/*"],
-            "@config/*": ["src/config/*"],
-            "@/*": ["src*"]
+            "@shared/*": ["shared/*"],
+            "@domains/*": ["domains/*"],
+            "@utils/*": ["utils/*"],
+            "@config/*": ["config/*"]
         }
     },
     "exclude": ["node_modules", "dist"]

@@ -13,6 +13,34 @@ type PageInfo {
   hasNextPage: Boolean!
 }
 
+type User {
+  id: ID
+  first_name: String
+  last_name: String
+  username: String
+  last_login: String
+  last_login_attempt: String
+  sex: String
+  email: EmailAddress
+  phone: String
+  phone_ext: String
+  phone2: String
+  phone2_ext: String
+  internal_id: String
+  language: String
+  active: String
+}
+
+"""Mongo object id scalar type"""
+scalar EmailAddress
+
+"""Provides User item and a cursor to its position"""
+type UserEdge {
+  """The position of this User item"""
+  cursor: String!
+  node: User!
+}
+
 type Contact {
   id: ID
   company: Company
@@ -40,9 +68,6 @@ type Contact {
 A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
 """
 scalar DateTime
-
-"""Mongo object id scalar type"""
-scalar EmailAddress
 
 """Provides Contact item and a cursor to its position"""
 type ContactEdge {
@@ -154,31 +179,6 @@ type CompanyConnection {
   totalCount: Int!
   pageInfo: PageInfo!
   edges: [CompanyEdge!]!
-}
-
-type User {
-  id: ID
-  first_name: String
-  last_name: String
-  username: String
-  last_login: String
-  last_login_attempt: String
-  sex: String
-  email: EmailAddress
-  phone: String
-  phone_ext: String
-  phone2: String
-  phone2_ext: String
-  internal_id: String
-  language: String
-  active: String
-}
-
-"""Provides User item and a cursor to its position"""
-type UserEdge {
-  """The position of this User item"""
-  cursor: String!
-  node: User!
 }
 
 type Query {
