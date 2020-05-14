@@ -70,10 +70,10 @@ export class AuthService {
         //Invalid payload type
         else {
             return false;
-        } 3
+        }
 
-        const userData = await this.userRepository.findOne(payload.userId);
-        this.authUserService.saveSessionData(userData);
+        // sets userData in authUserService state
+        await this.authUserService.setCurrentUser(payload.userId);
 
         return true;
     }

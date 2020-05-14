@@ -7,8 +7,9 @@ import { RedisService } from 'nestjs-redis';
 
 @Injectable({ scope: Scope.REQUEST })
 export class AuthUserService {
-    //@InjectRepository(UserRepository)
-    //protected readonly repository: UserRepository;
+    @InjectRepository(UserRepository)
+    protected readonly userRepository: UserRepository;
+
     private _loggedUser: User;
 
     uid = Math.random();
@@ -21,6 +22,22 @@ export class AuthUserService {
         console.log(context.headers);
     }
 
+    public async setCurrentUser(userId: number): Promise<void> {
+        let userData = await this.getSessionData(userId);
+
+        if (!userData) {
+            userData = await this.userRepository.findOne(userId);
+        } else {
+            // this will fetch user data from db and update cache. This is not sync.
+            this.userRepository.findOne(userId).then(this.saveSessionData);
+        }
+
+        if (userData) {
+            this.loggedUser = userData;
+            this.saveSessionData(userData);
+        }
+    }
+
     /**
      * Return user data from cache storage
      * @param id
@@ -30,6 +47,10 @@ export class AuthUserService {
         const client = await this.redisService.getClient();
         const cacheData = await client.get(key);
 
+        if (!cacheData) {
+            return;
+        }
+
         let user: User;
         try {
             user = JSON.parse(cacheData) as User;
@@ -38,17 +59,8 @@ export class AuthUserService {
         return user;
     }
 
-
     /**
-     * Get string key for user data cache store
-     * @param id
-     */
-    private userDataCacheKey(id: number): string {
-        return `auth.${id}.data`;
-    }
-
-    /**
-     * save user info un cache storage
+     * save user data un cache storage
      */
     public async saveSessionData(user: User): Promise<boolean> {
         // TODO: need to define user object type (?)
@@ -59,11 +71,19 @@ export class AuthUserService {
     }
 
     get loggedUser() {
-        return this.loggedUser;
+        return this._loggedUser;
     }
 
     set loggedUser(user: User) {
         this._loggedUser = user;
+    }
+
+    /**
+     * Get string key for user data cache store
+     * @param id
+     */
+    private userDataCacheKey(id: number): string {
+        return `auth.${id}.data`;
     }
 
     //getPermissions
