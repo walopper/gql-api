@@ -12,6 +12,10 @@ import { AuthModule } from '@domains/core/auth/auth.module';
             useGlobalPrefix: true,
             autoSchemaFile: process.cwd() + '/src/graphql/schema.gql',
             formatError,
+            uploads: {
+                maxFileSize: 10000000,
+                maxFiles: 5,
+            }
         }),
         AuthModule,
     ],

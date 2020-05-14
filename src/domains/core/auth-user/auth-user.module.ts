@@ -9,4 +9,4 @@ import { AuthModule } from '@domains/core/auth/auth.module';
     providers: [AuthUserService],
     exports: [AuthUserService],
 })
-export class AuthUserModule {}
+export class AuthUserModule { }

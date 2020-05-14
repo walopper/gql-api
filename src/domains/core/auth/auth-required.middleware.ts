@@ -1,9 +1,9 @@
-import { Injectable, NestMiddleware, Scope, UnauthorizedException } from '@nestjs/common';
 import { AuthService } from '@domains/core/auth/auth.service';
+import { Injectable, NestMiddleware, UnauthorizedException } from '@nestjs/common';
 
 @Injectable()
 export class AuthRequiredMiddleware implements NestMiddleware {
-    constructor(private readonly authService: AuthService) {}
+    constructor(private readonly authService: AuthService) { }
 
     async use(req: Request, res: Response, next: Function) {
         console.log('Request...');
