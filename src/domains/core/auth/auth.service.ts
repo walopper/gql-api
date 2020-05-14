@@ -7,15 +7,21 @@ import crypto from 'crypto';
 import { RedisService } from 'nestjs-redis';
 import { JwtService } from '@nestjs/jwt';
 import { TokenPayload } from '@domains/core/auth/types/token-payload';
+import { AuthUserService } from '../auth-user/auth-user.service';
 
 @Injectable()
 export class AuthService {
     @InjectRepository(UserRepository)
     protected readonly userRepository: UserRepository;
 
-    protected readonly SESSION_TOKEN_LIFETIME = 30 * 86400 * 1000; //30 days
+    protected readonly SESSION_TOKEN_LIFETIME = 30 * 86400 * 1000; //30 days // TODO move to config file
 
-    constructor(private readonly jwtService: JwtService, protected readonly redisService: RedisService) {}
+    constructor(
+        private readonly jwtService: JwtService,
+        protected readonly redisService: RedisService,
+        protected readonly authUserService: AuthUserService,
+        protected readonly userService: UserService,
+    ) { }
 
     public async login(username: string, password: string): Promise<ResponseToken> {
         //Get user using username
@@ -64,7 +70,10 @@ export class AuthService {
         //Invalid payload type
         else {
             return false;
-        }
+        } 3
+
+        const userData = await this.userRepository.findOne(payload.userId);
+        this.authUserService.saveSessionData(userData);
 
         return true;
     }
@@ -87,11 +96,13 @@ export class AuthService {
             .digest('hex');
     }
 
+    /**
+     * Generates a JWT and save in cache
+     * @param userId 
+     */
     private async generateUserSession(userId: number): Promise<string> {
         const token = await this.generateUserToken(userId);
-
         await this.saveUserTokenInSession(userId, token);
-
         return token;
     }
 
@@ -105,11 +116,10 @@ export class AuthService {
     }
 
     /**
-     * save user info un cache storage
+     * save user token in cache
      */
     private async saveUserTokenInSession(userId: number, token: string): Promise<void> {
         const key = this.getUserSessionTokenCachekey(userId);
-
         const client = await this.redisService.getClient();
         await client.hset(key, token, Date.now());
     }
@@ -117,7 +127,7 @@ export class AuthService {
     private async verifyUserTokenInSession(userId: number, token: string): Promise<boolean> {
         const key = this.getUserSessionTokenCachekey(userId);
         const client = await this.redisService.getClient();
-        const tokenTime = parseInt(await client.hget(key, token), 10);
+        const tokenTime = +(await client.hget(key, token));
 
         //Token was not found in session
         if (!tokenTime) {
@@ -129,6 +139,8 @@ export class AuthService {
             await client.hdel(key, token);
             return false;
         }
+
+
 
         return true;
     }

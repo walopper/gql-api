@@ -1,25 +1,20 @@
 import { RedisService } from 'nestjs-redis';
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable, Inject, Scope } from '@nestjs/common';
 import bcrypt from 'bcrypt';
+import { InjectRepository } from '@nestjs/typeorm';
+import { UserRepository } from './user.repository';
 
 type User = any;
 
-@Injectable()
+@Injectable({ scope: Scope.REQUEST })
 export class UserService {
-    private readonly users: User[];
+    @InjectRepository(UserRepository)
+    protected readonly repository: UserRepository;
 
     // @Inject(RedisService)
     // private redisService: RedisService;
 
-    constructor(private redisService: RedisService) {
-        this.users = [
-            {
-                id: 1,
-                username: 'ale',
-                password: '123456',
-            }
-        ];
-    }
+    constructor(private redisService: RedisService) { }
 
     public hashPassword($string, $salt = null) {
         // $global = Configure:: read('auth.salt');
