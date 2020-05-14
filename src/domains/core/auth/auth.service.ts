@@ -8,6 +8,7 @@ import { RedisService } from 'nestjs-redis';
 import { JwtService } from '@nestjs/jwt';
 import { TokenPayload } from '@domains/core/auth/types/token-payload';
 import { AuthUserService } from '../auth-user/auth-user.service';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
@@ -17,10 +18,11 @@ export class AuthService {
     protected readonly SESSION_TOKEN_LIFETIME = 30 * 86400 * 1000; //30 days // TODO move to config file
 
     constructor(
-        private readonly jwtService: JwtService,
+        protected readonly jwtService: JwtService,
         protected readonly redisService: RedisService,
         protected readonly authUserService: AuthUserService,
         protected readonly userService: UserService,
+        private configService: ConfigService
     ) { }
 
     public async login(username: string, password: string): Promise<ResponseToken> {
@@ -40,8 +42,7 @@ export class AuthService {
         const isValidPassword = this.verifyUserPassword(user, password);
 
         if (!isValidPassword) {
-            // TODO: uncomment
-            // throw new NotFoundException('Login incorrect');
+            throw new NotFoundException('Login incorrect');
         }
 
         const jwtToken = await this.generateUserSession(user.id);
@@ -72,9 +73,6 @@ export class AuthService {
             return false;
         }
 
-        // sets userData in authUserService state
-        await this.authUserService.setCurrentUser(payload.userId);
-
         return true;
     }
 
@@ -84,7 +82,8 @@ export class AuthService {
      * @param loginPassword
      */
     private verifyUserPassword(userModel: User, loginPassword: string): boolean {
-        const currentHash = this.sha1(process.env.SALK + loginPassword + userModel.password_salt);
+        const salk = this.configService.get('AUTHENTICATION_SALT');
+        const currentHash = this.sha1(salk + loginPassword + userModel.password_salt);
         return currentHash && currentHash === userModel.password_hash;
     }
 
@@ -151,5 +150,9 @@ export class AuthService {
      */
     private getUserSessionTokenCachekey(id: number): string {
         return `auth:user:${id}:tokens`;
+    }
+
+    public getTokenInfo(token: string): TokenPayload {
+        return this.jwtService.decode(token) as TokenPayload;
     }
 }

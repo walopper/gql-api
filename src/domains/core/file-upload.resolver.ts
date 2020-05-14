@@ -1,51 +1,48 @@
 
-import { ExecutionContext, mixin, NestInterceptor, Optional, UseInterceptors } from '@nestjs/common';
-import { GqlExecutionContext, Mutation, Resolver, Args } from '@nestjs/graphql';
+import { Args, Mutation, Resolver } from '@nestjs/graphql';
+import { GraphQLUpload, FileUpload } from 'graphql/scalars/file-upload.scalar';
 
+// interface IField {
+//     name: string;
+//     options?: any;
+// }
 
-interface IField {
-    name: string;
-    options?: any;
-}
+// export function GraphqlFileFieldsInterceptor(
+//     uploadFields: IField[],
+//     localOptions?: any,
+// ) {
+//     class MixinInterceptor implements NestInterceptor {
+//         options: any = {};
+//         constructor(@Optional() options: any = {}) {
+//             this.options = { ...options, ...localOptions };
+//         }
 
-export function GraphqlFileFieldsInterceptor(
-    uploadFields: IField[],
-    localOptions?: any,
-) {
-    class MixinInterceptor implements NestInterceptor {
-        options: any = {};
-        constructor(@Optional() options: any = {}) {
-            this.options = { ...options, ...localOptions };
-        }
+//         async intercept(
+//             context: ExecutionContext,
+//         ): Promise<any> {
+//             const ctx = GqlExecutionContext.create(context);
+//             const args = ctx.getArgs();
 
-        async intercept(
-            context: ExecutionContext,
-        ): Promise<any> {
-            const ctx = GqlExecutionContext.create(context);
-            const args = ctx.getArgs();
-
-            await Promise.all(
-                uploadFields.map(uploadField => {
-                    const file = args[uploadField.name];
-                    return file;
-                }),
-            );
-        }
-    }
-    const Interceptor = mixin(MixinInterceptor);
-    return Interceptor;
-}
+//             await Promise.all(
+//                 uploadFields.map(uploadField => {
+//                     const file = args[uploadField.name];
+//                     return file;
+//                 }),
+//             );
+//         }
+//     }
+//     const Interceptor = mixin(MixinInterceptor);
+//     return Interceptor;
+// }
 
 @Resolver()
 export class FileUploadResolver {
 
     @Mutation(() => Boolean)
-    @UseInterceptors(
-        GraphqlFileFieldsInterceptor([
-            { name: 'file' }
-        ]),
-    )
-    async uploadFile(@Args('file') catImage1: string): Promise<boolean> {
+    async uploadFile(
+        @Args({ name: 'file', type: () => GraphQLUpload }) fileInput: FileUpload
+    ): Promise<boolean> {
+        console.log(1);;
         return true
     }
 

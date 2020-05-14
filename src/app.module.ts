@@ -1,12 +1,11 @@
-import { Module } from '@nestjs/common';
-import { RedisModule } from 'nestjs-redis';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { GraphQLModule } from './graphql/graphql.module';
-import { DomainsModule } from '@domains/domains.module';
 import { AuthModule } from '@domains/core/auth/auth.module';
+import { DomainsModule } from '@domains/domains.module';
+import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { redisUrlParse } from '@shared/utils/redis-url-parse';
-import { AuthUserService } from '@domains/core/auth-user/auth-user.service';
+import { RedisModule } from 'nestjs-redis';
+import { GraphQLModule } from './graphql/graphql.module';
 
 @Module({
     imports: [
@@ -28,6 +27,9 @@ import { AuthUserService } from '@domains/core/auth-user/auth-user.service';
             }, // or use async method
             inject: [ConfigService],
         }),
+    ],
+    providers: [
+
     ],
 })
 export class AppModule { }

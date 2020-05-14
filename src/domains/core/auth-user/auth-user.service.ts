@@ -1,25 +1,30 @@
-import { Inject, Injectable, Scope } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { UserRepository } from '@domains/user/user.repository';
-import { CONTEXT, GqlExecutionContext } from '@nestjs/graphql';
 import { User } from '@domains/user/user.entity';
+import { UserRepository } from '@domains/user/user.repository';
+import { Inject, Injectable, Scope } from '@nestjs/common';
+import { CONTEXT } from '@nestjs/graphql';
+import { JwtService } from '@nestjs/jwt';
+import { InjectRepository } from '@nestjs/typeorm';
 import { RedisService } from 'nestjs-redis';
+import { TokenPayload } from '../auth/types/token-payload';
+import { AuthService } from '../auth/auth.service';
 
 @Injectable({ scope: Scope.REQUEST })
 export class AuthUserService {
     @InjectRepository(UserRepository)
     protected readonly userRepository: UserRepository;
 
-    public loggedUser: User;
+    private _loggedUser: User;
 
     uid = Math.random();
 
     public constructor(
         @Inject(CONTEXT) context,
-        protected readonly redisService: RedisService
+        protected readonly redisService: RedisService,
+        //protected readonly authService: AuthService,
     ) {
-        console.log('LoggerUserService created', this.uid);
-        console.log(context.headers);
+        const token = context.headers.authorization.replace('Bearer ', '');
+        // const userTokenData = this.authService.getTokenInfo(token) as TokenPayload;
+        // this.setCurrentUser(userTokenData.userId);
     }
 
     public async setCurrentUser(userId: number): Promise<void> {
@@ -29,7 +34,7 @@ export class AuthUserService {
             userData = await this.userRepository.findOne(userId);
         } else {
             // this will fetch user data from db and update cache. This is not sync.
-            this.userRepository.findOne(userId).then(this.saveSessionData);
+            this.userRepository.findOne(userId).then(user => this.saveSessionData(user));
         }
 
         if (userData) {
@@ -68,6 +73,14 @@ export class AuthUserService {
         const key = this.userDataCacheKey(user.id);
         const client = await this.redisService.getClient();
         return !!client.set(key, JSON.stringify(user), 'EX', 86400); // TODO: ttl value should be in a config file
+    }
+
+    get loggedUser() {
+        return this._loggedUser;
+    }
+
+    set loggedUser(user: User) {
+        this._loggedUser = user;
     }
 
     /**

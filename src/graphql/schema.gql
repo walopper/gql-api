@@ -208,5 +208,8 @@ type Query {
 }
 
 type Mutation {
-  uploadFile(file: String!): Boolean!
+  uploadFile(file: Upload!): Boolean!
 }
+
+"""The `Upload` scalar type represents a file upload."""
+scalar Upload
