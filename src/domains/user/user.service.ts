@@ -6,7 +6,7 @@ import { UserRepository } from './user.repository';
 
 type User = any;
 
-@Injectable({ scope: Scope.REQUEST })
+@Injectable()
 export class UserService {
     @InjectRepository(UserRepository)
     protected readonly repository: UserRepository;
@@ -14,11 +14,10 @@ export class UserService {
     // @Inject(RedisService)
     // private redisService: RedisService;
 
-    constructor(private redisService: RedisService) { }
+    constructor(private redisService: RedisService) {}
 
     public hashPassword($string, $salt = null) {
         // $global = Configure:: read('auth.salt');
         // return sha1($global.$string.$salt);
     }
-
 }

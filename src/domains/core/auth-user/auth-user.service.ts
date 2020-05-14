@@ -14,10 +14,7 @@ export class AuthUserService {
 
     uid = Math.random();
 
-    public constructor(
-        @Inject(CONTEXT) context,
-        protected readonly redisService: RedisService
-    ) {
+    public constructor(@Inject(CONTEXT) context, protected readonly redisService: RedisService) {
         console.log('LoggerUserService created', this.uid);
         console.log(context.headers);
     }
@@ -54,7 +51,7 @@ export class AuthUserService {
         let user: User;
         try {
             user = JSON.parse(cacheData) as User;
-        } catch (error) { }
+        } catch (error) {}
 
         return user;
     }
