@@ -10,7 +10,7 @@ export class AuthUserService {
     @InjectRepository(UserRepository)
     protected readonly userRepository: UserRepository;
 
-    private _loggedUser: User;
+    public loggedUser: User;
 
     uid = Math.random();
 
@@ -68,14 +68,6 @@ export class AuthUserService {
         const key = this.userDataCacheKey(user.id);
         const client = await this.redisService.getClient();
         return !!client.set(key, JSON.stringify(user), 'EX', 86400); // TODO: ttl value should be in a config file
-    }
-
-    get loggedUser() {
-        return this._loggedUser;
-    }
-
-    set loggedUser(user: User) {
-        this._loggedUser = user;
     }
 
     /**

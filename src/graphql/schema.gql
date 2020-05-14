@@ -182,6 +182,17 @@ type CompanyConnection {
 }
 
 type Query {
+  companies(
+    """Cursor to the item after which first n items will be taken"""
+    after: String
+    first: Int
+    before: String
+
+    """Cursor to the item before which last n items will be taken"""
+    last: Int
+    where: CompanyQueryWhereInput
+    order_by: [CompanyQueryOrderByInput!]
+  ): CompanyConnection!
   contactsByCompanyId(
     """Cursor to the item after which first n items will be taken"""
     after: String
@@ -194,15 +205,8 @@ type Query {
     order_by: [ContactQueryOrderByInput!]
     company_id: ID!
   ): ContactConnection!
-  companies(
-    """Cursor to the item after which first n items will be taken"""
-    after: String
-    first: Int
-    before: String
+}
 
-    """Cursor to the item before which last n items will be taken"""
-    last: Int
-    where: CompanyQueryWhereInput
-    order_by: [CompanyQueryOrderByInput!]
-  ): CompanyConnection!
+type Mutation {
+  uploadFile(file: String!): Boolean!
 }

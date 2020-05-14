@@ -6,6 +6,7 @@ import { DomainsModule } from '@domains/domains.module';
 import { AuthModule } from '@domains/core/auth/auth.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { redisUrlParse } from '@shared/utils/redis-url-parse';
+import { AuthUserService } from '@domains/core/auth-user/auth-user.service';
 
 @Module({
     imports: [
@@ -29,4 +30,4 @@ import { redisUrlParse } from '@shared/utils/redis-url-parse';
         }),
     ],
 })
-export class AppModule {}
+export class AppModule { }
