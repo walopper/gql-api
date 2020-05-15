@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, Delete, Param, Get } from '@nestjs/common';
 import { AuthService } from './auth.service';
 
 export interface LoginDto {
@@ -8,21 +8,25 @@ export interface LoginDto {
 
 @Controller('auth')
 export class AuthController {
-    constructor(private authService: AuthService) {}
+    constructor(private authService: AuthService) { }
 
     @Post('login')
     public login(@Body() { username, password }: LoginDto) {
         return this.authService.login(username, password);
     }
-}
 
-/*
-auth.{user_id}.tokens [
-    jwtToken1,
-    jwtToken2
-]
+    // @Get('logout')
+    // public async getUserTokens(
+    //     @Param('userId') userId: number
+    // ) {
+    //     return await this.authService.getUserTokens(userId);
+    // }
 
-auth.{user_id}.info {
-    permisos, basic info
+    // @Delete('userTokens/:userId')
+    // public async deleteUserToken(
+    //     @Param('userId') userId: number
+    // ): Promise<boolean> {
+    //     await this.authService.invalidateUserTokens(userId);
+    //     return true;
+    // } 
 }
-*/

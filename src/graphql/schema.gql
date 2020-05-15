@@ -28,7 +28,7 @@ type User {
   phone2_ext: String
   internal_id: String
   language: String
-  active: String
+  active: Boolean
 }
 
 """Mongo object id scalar type"""

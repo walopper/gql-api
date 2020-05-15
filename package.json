@@ -35,7 +35,6 @@
         "graphql": "^15.0.0",
         "graphql-parse-resolve-info": "^4.7.0",
         "graphql-tools": "^5.0.0",
-        "graphql-upload": "^10.0.0",
         "json-stable-stringify": "^1.0.1",
         "mysql": "^2.18.1",
         "nestjs-redis": "^1.2.7",

@@ -1,9 +1,9 @@
 import { User } from '@domains/user/user.entity';
 import { UserRepository } from '@domains/user/user.repository';
 import { Inject, Injectable, Scope } from '@nestjs/common';
-import { CONTEXT } from '@nestjs/graphql';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RedisService } from 'nestjs-redis';
+import { REQUEST } from '@nestjs/core';
 
 @Injectable({ scope: Scope.REQUEST })
 export class AuthUserService {
@@ -15,13 +15,18 @@ export class AuthUserService {
     uid = Math.random();
 
     public constructor(
-        @Inject(CONTEXT) context,
+        @Inject(REQUEST) context,
         protected readonly redisService: RedisService,
         //protected readonly authService: AuthService,
     ) {
-        const token = context.headers.authorization.replace('Bearer ', '');
+        //const token = context.headers.authorization.replace('Bearer ', '');
         // const userTokenData = this.authService.getTokenInfo(token) as TokenPayload;
         // this.setCurrentUser(userTokenData.userId);
+
+        const userPayload = context.req ? context.req.user : context.user;
+
+
+        console.log(userPayload);
     }
 
     public async setCurrentUser(userId: number): Promise<void> {

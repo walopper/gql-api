@@ -8,7 +8,6 @@ import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import crypto from 'crypto';
 import { RedisService } from 'nestjs-redis';
-import { AuthUserService } from '../auth-user/auth-user.service';
 
 @Injectable()
 export class AuthService {
@@ -20,21 +19,22 @@ export class AuthService {
     constructor(
         protected readonly jwtService: JwtService,
         protected readonly redisService: RedisService,
-        protected readonly authUserService: AuthUserService,
         protected readonly userService: UserService,
-        private configService: ConfigService
+        protected readonly configService: ConfigService
     ) { }
 
     public async login(username: string, password: string): Promise<ResponseToken> {
         //Get user using username
         const user = await this.userRepository.findOne({
+            select: ['id', 'password_hash', 'password_salt'],
             where: {
                 username: username,
-                //is_active: true
+                active: true
             },
         });
 
         if (!user) {
+
             throw new UnauthorizedException('Login incorrect');
         }
 
@@ -42,7 +42,7 @@ export class AuthService {
         const isValidPassword = this.verifyUserPassword(user, password);
 
         if (!isValidPassword) {
-            throw new NotFoundException('Login incorrect');
+            throw new UnauthorizedException('Login incorrect');
         }
 
         const jwtToken = await this.generateUserSession(user.id);
@@ -50,30 +50,31 @@ export class AuthService {
         return { token: jwtToken };
     }
 
-    public async validateToken(token: string): Promise<boolean> {
+
+    public async verifyToken(token: string): Promise<TokenPayload | undefined> {
         let payload;
 
         try {
             payload = this.jwtService.verify(token) as TokenPayload;
         } catch (e) {
             //Invalid token
-            return false;
+            return;
         }
 
         if (payload.type === 'USER') {
             //Token doesn't exists on user session
             if (!(await this.verifyUserTokenInSession(payload.userId, token))) {
-                return false;
+                return;
             }
         } else if (payload.type === 'INTERNAL') {
             //TODO: Implementar logica de authentification para internal services
         }
         //Invalid payload type
         else {
-            return false;
+            return;
         }
 
-        return true;
+        return payload;
     }
 
     /**
@@ -82,8 +83,8 @@ export class AuthService {
      * @param loginPassword
      */
     private verifyUserPassword(userModel: User, loginPassword: string): boolean {
-        const salk = this.configService.get('AUTHENTICATION_SALT');
-        const currentHash = this.sha1(salk + loginPassword + userModel.password_salt);
+        const globalSalt = this.configService.get('AUTHENTICATION_SALT');
+        const currentHash = this.sha1(globalSalt + loginPassword + userModel.password_salt);
         return currentHash && currentHash === userModel.password_hash;
     }
 
@@ -154,5 +155,37 @@ export class AuthService {
 
     public getTokenInfo(token: string): TokenPayload {
         return this.jwtService.decode(token) as TokenPayload;
+    }
+
+    /**
+     * Delete all user token from cache
+     * @param userId 
+     */
+    public async invalidateUserTokens(userId: number): Promise<boolean> {
+        const key = this.getUserSessionTokenCachekey(userId);
+        const client = await this.redisService.getClient();
+        return !!await client.del(key);
+    }
+
+    /**
+     * Delete an specific user token from cache
+     * @param userId 
+     * @param token 
+     */
+    public async invalidateUserToken(userId: number, token: string): Promise<boolean> {
+        const key = this.getUserSessionTokenCachekey(userId);
+        const client = await this.redisService.getClient();
+        return !!await client.hdel(key, token);
+    }
+
+    /**
+     * Delete an specific user token from cache
+     * @param userId 
+     * @param token 
+     */
+    public async getUserTokens(userId: number) {
+        const key = this.getUserSessionTokenCachekey(userId);
+        const client = await this.redisService.getClient();
+        return await client.hgetall(key);
     }
 }

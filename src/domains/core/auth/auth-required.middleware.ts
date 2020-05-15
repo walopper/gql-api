@@ -14,9 +14,14 @@ export class AuthRequiredMiddleware implements NestMiddleware {
 
         const token = req.headers['authorization'].replace('Bearer ', '');
 
-        if (!(await this.authService.validateToken(token))) {
+        const userPayload = await this.authService.verifyToken(token);
+
+        if (!userPayload) {
             throw new UnauthorizedException();
         }
+
+        //@ts-ignore
+        req.user = userPayload;
 
         next();
     }

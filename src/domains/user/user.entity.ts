@@ -33,10 +33,10 @@ export class User extends BaseEntity {
     @Column()
     username: string;
 
-    @Column()
+    @Column({ select: false })
     password_hash: string;
 
-    @Column()
+    @Column({ select: false })
     password_salt: string;
 
     @Field({ nullable: true })
@@ -81,7 +81,7 @@ export class User extends BaseEntity {
 
     @Field({ nullable: true })
     @Column()
-    active: string;
+    active: boolean;
 }
 
 @ObjectType()
