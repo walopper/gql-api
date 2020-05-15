@@ -10,47 +10,55 @@ export class AuthUserService {
     @InjectRepository(UserRepository)
     protected readonly userRepository: UserRepository;
 
-    private _loggedUser: User;
-
-    uid = Math.random();
+    protected loggedUserId: number;
+    protected loggedUser: User;
 
     public constructor(
         @Inject(REQUEST) context,
-        protected readonly redisService: RedisService,
-        //protected readonly authService: AuthService,
+        protected readonly redisService: RedisService, //protected readonly authService: AuthService,
     ) {
-        //const token = context.headers.authorization.replace('Bearer ', '');
-        // const userTokenData = this.authService.getTokenInfo(token) as TokenPayload;
-        // this.setCurrentUser(userTokenData.userId);
-
         const userPayload = context.req ? context.req.user : context.user;
-
-
-        console.log(userPayload);
+        this.loggedUserId = userPayload.userId;
     }
 
-    public async setCurrentUser(userId: number): Promise<void> {
-        let userData = await this.getSessionData(userId);
+    public async hasPermission(permissionId: string): Promise<boolean> {
+        return true;
+    }
 
-        if (!userData) {
-            userData = await this.userRepository.findOne(userId);
-        } else {
-            // this will fetch user data from db and update cache. This is not sync.
-            this.userRepository.findOne(userId).then(user => this.saveSessionData(user));
+    public async hasFeatureAccess(featureId: string): Promise<boolean> {
+        return true;
+    }
+
+    public async getUser(): Promise<User | undefined> {
+        //Local cache
+        if (this.loggedUser) {
+            return this.loggedUser;
         }
 
-        if (userData) {
-            this.loggedUser = userData;
-            this.saveSessionData(userData);
+        //Redis Cache
+        const userFromSession = await this.getUserDataFromSession(this.loggedUserId);
+
+        if (userFromSession) {
+            return Object.assign(new User(), userFromSession);
         }
+
+        const userFromDb = await this.userRepository.findOne(this.loggedUserId);
+
+        if (!userFromDb) {
+            return;
+        }
+
+        this.storeUserDataInSession(userFromDb);
+
+        return userFromDb;
     }
 
     /**
      * Return user data from cache storage
      * @param id
      */
-    public async getSessionData(id: number): Promise<User> {
-        const key = this.userDataCacheKey(id);
+    protected async getUserDataFromSession(id: number): Promise<User | undefined> {
+        const key = this.getUserSessionDataCachekey(id);
         const client = await this.redisService.getClient();
         const cacheData = await client.get(key);
 
@@ -58,40 +66,24 @@ export class AuthUserService {
             return;
         }
 
-        let user: User;
-        try {
-            user = JSON.parse(cacheData) as User;
-        } catch (error) { }
-
-        return user;
+        return JSON.parse(cacheData) as User;
     }
 
     /**
      * save user data un cache storage
      */
-    public async saveSessionData(user: User): Promise<boolean> {
-        // TODO: need to define user object type (?)
-        this.loggedUser = user;
-        const key = this.userDataCacheKey(user.id);
+    protected async storeUserDataInSession(user: User): Promise<boolean> {
+        const key = this.getUserSessionDataCachekey(user.id);
         const client = await this.redisService.getClient();
-        return !!client.set(key, JSON.stringify(user), 'EX', 86400); // TODO: ttl value should be in a config file
-    }
 
-    get loggedUser() {
-        return this._loggedUser;
-    }
-
-    set loggedUser(user: User) {
-        this._loggedUser = user;
+        return !!(await client.set(key, JSON.stringify(user), 'EX', 86400)); // TODO: ttl value should be in a config file
     }
 
     /**
      * Get string key for user data cache store
      * @param id
      */
-    private userDataCacheKey(id: number): string {
-        return `auth.${id}.data`;
+    protected getUserSessionDataCachekey(id: number): string {
+        return `auth:user:${id}:data`;
     }
-
-    //getPermissions
 }

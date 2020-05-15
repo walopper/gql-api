@@ -2,7 +2,7 @@ import { BaseEntity, Column, CreateDateColumn, Entity, OneToMany, PrimaryColumn,
 import { PermissionRule } from '@domains/user/role/permission/permission-rule.entity';
 
 @Entity({ name: 'role' })
-export class Role extends BaseEntity {
+export class Role {
     @PrimaryColumn()
     id: number;
 

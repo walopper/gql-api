@@ -1,4 +1,3 @@
-
 import { Field, ID, ObjectType, registerEnumType } from '@nestjs/graphql';
 import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { EmailAddress } from '../../graphql/scalars/email-address.scalar';
@@ -15,7 +14,7 @@ registerEnumType(UserSex, {
 
 @ObjectType()
 @Entity({ name: 'account' })
-export class User extends BaseEntity {
+export class User {
     @Field(_ => ID, { nullable: true })
     @Column()
     @PrimaryGeneratedColumn()
@@ -82,7 +81,11 @@ export class User extends BaseEntity {
     @Field({ nullable: true })
     @Column()
     active: boolean;
+
+    getFullName() {
+        return `${this.first_name} ${this.last_name}`;
+    }
 }
 
 @ObjectType()
-export class UserConnection extends Connection(User) { }
+export class UserConnection extends Connection(User) {}
