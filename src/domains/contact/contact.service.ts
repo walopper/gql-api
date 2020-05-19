@@ -1,15 +1,14 @@
-import _ from 'lodash';
-import { ContactRepository } from './contact.repository';
-import { Contact } from './contact.entity';
-import { ContactQueryWhereInput } from './inputs/contact-query-where.input';
-import { ContactQueryOrderByInput } from './inputs/contact-query-orderby.input';
+import { Injectable, Scope, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BaseEntityService, BaseServiceGetMethodOptions } from '../../shared/base-classes/base-entity-service';
 import { QueryOptions } from '../../shared/types/query-options.type';
-import { Inject, Injectable, Scope, UnauthorizedException } from '@nestjs/common';
 import { SelectQueryBuilder } from '../../shared/utils/select-query-builder';
 import { Company } from '../company/company.entity';
-import { AuthUserService } from '@domains/core/auth-user/auth-user.service';
+import { Contact } from './contact.entity';
+import { ContactRepository } from './contact.repository';
+import { ContactQueryOrderByInput } from './inputs/contact-query-orderby.input';
+import { ContactQueryWhereInput } from './inputs/contact-query-where.input';
+import { ContactStatus } from './status/contact-status.entity';
 
 @Injectable({ scope: Scope.REQUEST })
 export class ContactService extends BaseEntityService<Contact, ServiceGetMethodOptions> {

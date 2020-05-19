@@ -41,24 +41,39 @@ type UserEdge {
   node: User!
 }
 
+type ContactStatus {
+  id: ID
+  stage_id: Float
+  type: String
+  win_percentage: Float
+  is_active: Boolean
+  position: Float
+  name_es: String
+  slug: String
+}
+
 type Contact {
   id: ID
   company: Company
   sex: String
+  status: ContactStatus
   first_name: String
   last_name: String
   birthdate: DateTime
   name: String
   email: EmailAddress
+  phone_home: String!
+  phone_office: String!
+  phone_cel: String!
   address1: String
   address2: String
   city: String
   postal_code: String
+  follow_up_at: DateTime
   notes: String
   interest: String
   assigned_at: DateTime
   last_activity_at: DateTime
-  follow_up_at: DateTime
   last_communication_interaction_at: DateTime
   created_at: DateTime
   updated_at: DateTime
@@ -87,6 +102,8 @@ type Company implements IInstitution {
   id: ID!
   name: String
   level: Float
+  timezone: String
+  is_active: Boolean
   crm_is_active: Boolean
   contacts(
     """Cursor to the item after which first n items will be taken"""

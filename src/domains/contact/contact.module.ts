@@ -6,10 +6,20 @@ import { Contact } from './contact.entity';
 import { ContactRepository } from './contact.repository';
 import { ContactResolver } from './contact.resolver';
 import { ContactService } from './contact.service';
+import { ContactStatus } from './status/contact-status.entity';
+import { ContactStatusRepository } from './status/contact-status.repository';
+import { ContactStatusService } from './status/contact-status.service';
 
 @Module({
-    imports: [forwardRef(() => CompanyModule), TypeOrmModule.forFeature([Contact, ContactRepository])],
-    providers: [ContactResolver, ContactService, FileUploadResolver],
+    imports: [
+        forwardRef(() => CompanyModule),
+        TypeOrmModule.forFeature([
+            Contact,
+            ContactRepository,
+            ContactStatus,
+            ContactStatusRepository
+        ])],
+    providers: [ContactResolver, ContactService, FileUploadResolver, ContactStatusService],
     exports: [TypeOrmModule, ContactService],
 })
 export class ContactModule { }

@@ -15,6 +15,14 @@ export class Company extends AInstitution {
 
     @Field({ nullable: true })
     @Column()
+    timezone: string;
+
+    @Field({ nullable: true })
+    @Column()
+    is_active: boolean;
+
+    @Field({ nullable: true })
+    @Column()
     crm_is_active: boolean;
 
     @Field(type => [Contact], { name: 'contacts' })
@@ -26,7 +34,7 @@ export class Company extends AInstitution {
 }
 
 @ObjectType()
-export class CompanyConnection extends Connection(Company) {}
+export class CompanyConnection extends Connection(Company) { }
 
 /*
 @ObjectType()

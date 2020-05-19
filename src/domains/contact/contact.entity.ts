@@ -1,8 +1,10 @@
 import { Field, ID, ObjectType, registerEnumType } from '@nestjs/graphql';
-import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, OneToOne } from 'typeorm';
 import { Company } from '../company/company.entity';
 import { EmailAddress } from '../../graphql/scalars/email-address.scalar';
 import { Connection } from '../../graphql/libs/cursor-connection/connection.type';
+import { ContactStatus } from './status/contact-status.entity';
+import { Fields } from 'graphql/decorators/fields.decorator';
 
 enum ContactSex {
     M = 'M',
@@ -35,11 +37,19 @@ export class Contact extends BaseEntity {
 
     // @Field()
     // @Column()
-    // stage: ContactStage;
+    // stage: string;
+
+    @Field(type => ContactStatus, { name: 'status', nullable: true })
+    @OneToOne(type => ContactStatus)
+    @JoinColumn({ name: 'status_id' })
+    Status: ContactStatus;
+
+    @Column()
+    status_id: number;
 
     // @Field()
     // @Column()
-    // status: ContactStatus;
+    // status: string;
 
     // @Field()
     // @Column()
@@ -57,19 +67,23 @@ export class Contact extends BaseEntity {
     // @Column()
     // assigner: User;
 
-    @Field({ nullable: !!1 })
+    // @Field()
+    // @Column()
+    // area: User;
+
+    @Field({ nullable: true })
     @Column()
     first_name: string;
 
-    @Field({ nullable: !!1 })
+    @Field({ nullable: true })
     @Column()
     last_name: string;
 
-    @Field({ nullable: !!1 })
+    @Field({ nullable: true })
     @Column()
     birthdate: Date;
 
-    @Field({ nullable: !!1 })
+    @Field({ nullable: true })
     @Column()
     name: string;
 
@@ -77,63 +91,63 @@ export class Contact extends BaseEntity {
     @Column()
     email: string;
 
-    // @Field()
-    // @Column()
-    // phone_home: PhoneAddress;
+    @Field()
+    @Column()
+    phone_home: string;
 
-    // @Field()
-    // @Column()
-    // phone_office: PhoneAddress;
+    @Field()
+    @Column()
+    phone_office: string;
 
-    // @Field()
-    // @Column()
-    // phone_cel: PhoneAddress;
+    @Field()
+    @Column()
+    phone_cel: string;
 
-    @Field({ nullable: !!1 })
+    @Field({ nullable: true })
     @Column()
     address1: string;
 
-    @Field({ nullable: !!1 })
+    @Field({ nullable: true })
     @Column()
     address2: string;
 
-    @Field({ nullable: !!1 })
+    @Field({ nullable: true })
     @Column()
     city: string;
 
-    @Field({ nullable: !!1 })
+    @Field({ nullable: true })
     @Column()
     postal_code: string;
 
-    @Field({ nullable: !!1 })
-    @Column()
-    notes: string;
-
-    @Field({ nullable: !!1 })
-    @Column()
-    interest: string;
-
-    @Field({ nullable: !!1 })
-    @Column()
-    assigned_at: Date;
-
-    @Field({ nullable: !!1 })
-    @Column()
-    last_activity_at: Date;
-
-    @Field({ nullable: !!1 })
+    @Field({ nullable: true })
     @Column()
     follow_up_at: Date;
 
-    @Field({ nullable: !!1 })
+    @Field({ nullable: true })
+    @Column()
+    notes: string;
+
+    @Field({ nullable: true })
+    @Column()
+    interest: string;
+
+    @Field({ nullable: true })
+    @Column()
+    assigned_at: Date;
+
+    @Field({ nullable: true })
+    @Column()
+    last_activity_at: Date;
+
+    @Field({ nullable: true })
     @Column()
     last_communication_interaction_at: Date;
 
-    @Field({ nullable: !!1 })
+    @Field({ nullable: true })
     @Column()
     created_at: Date;
 
-    @Field({ nullable: !!1 })
+    @Field({ nullable: true })
     @Column()
     updated_at: Date;
 
@@ -146,4 +160,4 @@ export class Contact extends BaseEntity {
 }
 
 @ObjectType()
-export class ContactConnection extends Connection(Contact) {}
+export class ContactConnection extends Connection(Contact) { }

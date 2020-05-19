@@ -1,4 +1,5 @@
-import { Args, ID, Query, ResolveField, Resolver } from '@nestjs/graphql';
+import { ContactStatusRepository } from './status/contact-status.repository';
+import { Args, ID, Query, ResolveField, Resolver, Parent } from '@nestjs/graphql';
 import { Paginate, PaginateFn } from '../../graphql/libs/cursor-connection/paginate.decorator';
 import { DataloaderFn, Loader } from '../../graphql/libs/dataloader';
 import { Company } from '../company/company.entity';
@@ -8,6 +9,8 @@ import { Inject } from '@nestjs/common';
 import { ContactService } from './contact.service';
 import { ContactListArgs } from './args/contact-list.args';
 import { Fields } from '../../graphql/decorators/fields.decorator';
+import { ContactStatus as ContactStatus } from './status/contact-status.entity';
+import { ContactStatusService } from './status/contact-status.service';
 //import { ServerError } from '../../utils/errorHandler';
 //import { WHERE_INPUT } from '../../config/errorCodes';
 
@@ -18,6 +21,9 @@ export class ContactResolver {
 
     @Inject()
     protected companyService: CompanyService;
+
+    @Inject()
+    protected contactStatusService: ContactStatusService;
 
     @Query(type => ContactConnection, { name: 'contactsByCompanyId' })
     async getCompanyContacts(
@@ -37,40 +43,34 @@ export class ContactResolver {
                 { companyId },
             ),
         );
-
-        /*
-        const ERROR_INVALID_FORM_DATA = {message: "Invalid form data", code: 190, error_subcode: 460};
-        throw new UserInputError(ERROR_INVALID_FORM_DATA);
-        */
-
-        /*
-          "error": {
-            "message": "Message describing the error",
-            //"type": "OAuthException",
-            "code": 190,
-            "error_subcode": 460,
-            "fbtrace_id": "EJplcsCHuLu"
-          }
-          */
-
-        /*
-            {
-              "message": "requested list items count limit reached",
-              "code": 400,
-              "type": "bad_user_input",
-              "subcode": 636,
-            }
-        */
     }
 
+    /**
+     * Resolver for Company field
+     * @param loader 
+     * @param fields 
+     */
     @ResolveField(type => Company, { name: 'company', nullable: true })
     async getCompany(
         @Loader({ typeOrm: 'Company' }) loader: DataloaderFn<number[], Company>,
         @Fields() fields: string[],
     ): Promise<Company> {
-        //Dataloader Batch
         return loader(async (companiesIds: number[]) => {
             return this.companyService.getList({ fields, where: { id: { _in: companiesIds } } });
         });
     }
+
+    /**
+     * Resolver for status field
+     * @param loader 
+     * @param fields 
+     */
+    @ResolveField(type => ContactStatus, { name: 'status', nullable: true })
+    async getStatus(
+        @Loader({ typeOrm: 'Status' }) loader: DataloaderFn<number[], ContactStatus>,
+        @Fields() fields: string[],
+    ): Promise<ContactStatus> {
+        return loader(async (statusIds: number[]) => this.contactStatusService.getList({ fields, where: { id: { _in: statusIds } } }));
+    }
+
 }
