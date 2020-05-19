@@ -1,10 +1,10 @@
 import { Field, ID, ObjectType, registerEnumType } from '@nestjs/graphql';
-import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, OneToOne } from 'typeorm';
-import { Company } from '../company/company.entity';
-import { EmailAddress } from '../../graphql/scalars/email-address.scalar';
+import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Connection } from '../../graphql/libs/cursor-connection/connection.type';
+import { EmailAddress } from '../../graphql/scalars/email-address.scalar';
+import { Company } from '../company/company.entity';
+import { ContactStage } from './stage/contact-stage.entity';
 import { ContactStatus } from './status/contact-status.entity';
-import { Fields } from 'graphql/decorators/fields.decorator';
 
 enum ContactSex {
     M = 'M',
@@ -35,9 +35,13 @@ export class Contact extends BaseEntity {
     @Column()
     sex: ContactSex;
 
-    // @Field()
-    // @Column()
-    // stage: string;
+    @Field(type => ContactStage, { name: 'stage', nullable: true })
+    @OneToOne(type => ContactStage)
+    @JoinColumn({ name: 'stage_id' })
+    Stage: ContactStage;
+
+    @Column()
+    stage_id: number;
 
     @Field(type => ContactStatus, { name: 'status', nullable: true })
     @OneToOne(type => ContactStatus)

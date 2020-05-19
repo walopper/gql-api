@@ -41,6 +41,14 @@ type UserEdge {
   node: User!
 }
 
+type ContactStage {
+  id: ID
+  position: Float
+  name_es: String
+  name_en: String
+  slug: String
+}
+
 type ContactStatus {
   id: ID
   stage_id: Float
@@ -49,6 +57,7 @@ type ContactStatus {
   is_active: Boolean
   position: Float
   name_es: String
+  name_en: String
   slug: String
 }
 
@@ -56,6 +65,7 @@ type Contact {
   id: ID
   company: Company
   sex: String
+  stage: ContactStage
   status: ContactStatus
   first_name: String
   last_name: String

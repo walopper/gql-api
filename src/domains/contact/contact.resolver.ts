@@ -11,8 +11,8 @@ import { ContactListArgs } from './args/contact-list.args';
 import { Fields } from '../../graphql/decorators/fields.decorator';
 import { ContactStatus as ContactStatus } from './status/contact-status.entity';
 import { ContactStatusService } from './status/contact-status.service';
-//import { ServerError } from '../../utils/errorHandler';
-//import { WHERE_INPUT } from '../../config/errorCodes';
+import { ContactStage } from './stage/contact-stage.entity';
+import { ContactStageService } from './stage/contact-stage.service';
 
 @Resolver(of => Contact)
 export class ContactResolver {
@@ -24,6 +24,9 @@ export class ContactResolver {
 
     @Inject()
     protected contactStatusService: ContactStatusService;
+
+    @Inject()
+    protected contactStageService: ContactStageService;
 
     @Query(type => ContactConnection, { name: 'contactsByCompanyId' })
     async getCompanyContacts(
@@ -71,6 +74,19 @@ export class ContactResolver {
         @Fields() fields: string[],
     ): Promise<ContactStatus> {
         return loader(async (statusIds: number[]) => this.contactStatusService.getList({ fields, where: { id: { _in: statusIds } } }));
+    }
+
+    /**
+     * Resolver for stage field
+     * @param loader 
+     * @param fields 
+     */
+    @ResolveField(type => ContactStage, { name: 'stage', nullable: true })
+    async getStage(
+        @Loader({ typeOrm: 'Stage' }) loader: DataloaderFn<number[], ContactStage>,
+        @Fields() fields: string[],
+    ): Promise<ContactStage> {
+        return loader(async (stageIds: number[]) => this.contactStageService.getList({ fields, where: { id: { _in: stageIds } } }));
     }
 
 }
