@@ -47,7 +47,13 @@ type ContactStage {
   name_es: String
   name_en: String
   slug: String
+  updated_at: DateTime
 }
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
 
 type ContactStatus {
   id: ID
@@ -59,6 +65,7 @@ type ContactStatus {
   name_es: String
   name_en: String
   slug: String
+  updated_at: DateTime
 }
 
 type Contact {
@@ -88,11 +95,6 @@ type Contact {
   created_at: DateTime
   updated_at: DateTime
 }
-
-"""
-A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
-"""
-scalar DateTime
 
 """Provides Contact item and a cursor to its position"""
 type ContactEdge {
