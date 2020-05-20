@@ -141,6 +141,8 @@ input ContactQueryWhereInput {
   name: StringComparisionOperatorsInput
   company_id: NumberComparisionOperatorsInput
   company: CompanyQueryWhereInput
+  stage: ContactStageQueryWhereInput
+  status: ContactStatusQueryWhereInput
 }
 
 input NumberComparisionOperatorsInput {
@@ -177,6 +179,16 @@ input BooleanComparisionOperatorsInput {
   _eq: Boolean
   _not_eq: Boolean
   _is_null: Boolean
+}
+
+input ContactStageQueryWhereInput {
+  _or: [ContactQueryWhereInput!]
+  id: NumberComparisionOperatorsInput
+}
+
+input ContactStatusQueryWhereInput {
+  _or: [ContactQueryWhereInput!]
+  id: NumberComparisionOperatorsInput
 }
 
 input ContactQueryOrderByInput {

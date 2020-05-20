@@ -16,14 +16,14 @@ export class PermissionRule extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @ManyToOne(type => Role)
+    @ManyToOne(_type => Role)
     @JoinColumn({ name: 'role_id' })
     Role: Role;
 
     @Column()
     role_id: number;
 
-    @ManyToOne(type => Permission)
+    @ManyToOne(_type => Permission)
     @JoinColumn({ name: 'permission_id' })
     Permission: Permission;
 

@@ -15,7 +15,8 @@
             "@shared/*": ["shared/*"],
             "@domains/*": ["domains/*"],
             "@utils/*": ["utils/*"],
-            "@config/*": ["config/*"]
+            "@config/*": ["config/*"],
+            "@graphql/*": ["graphql/*"]
         }
     },
     "exclude": ["node_modules", "dist"]

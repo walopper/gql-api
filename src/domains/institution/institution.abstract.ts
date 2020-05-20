@@ -12,7 +12,7 @@ export abstract class AInstitution extends BaseEntity implements IInstitution {
     @Field({ nullable: true })
     level: number;
 
-    @OneToOne(_ => Institution)
+    @OneToOne(_type => Institution)
     @JoinColumn({ name: 'id' })
     Institution: Institution;
 

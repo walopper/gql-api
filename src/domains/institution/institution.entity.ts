@@ -6,7 +6,7 @@ import { IInstitution } from './institution.interface';
 @Entity({ name: 'institution' })
 //@Tree("nested-set")
 export class Institution extends BaseEntity implements IInstitution {
-    @Field(_ => ID)
+    @Field(_type => ID)
     @Column()
     @PrimaryGeneratedColumn()
     id: number;

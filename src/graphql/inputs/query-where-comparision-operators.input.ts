@@ -14,10 +14,10 @@ export class StringComparisionOperatorsInput extends ComparisionOperatorsInput {
     @Field({ nullable: true })
     _not_eq?: string;
 
-    @Field(_ => [String], { nullable: true })
+    @Field(_type => [String], { nullable: true })
     _in?: string[];
 
-    @Field(_ => [String], { nullable: true })
+    @Field(_type => [String], { nullable: true })
     _not_in?: string[];
 
     @Field({ nullable: true })
@@ -50,10 +50,10 @@ export class NumberComparisionOperatorsInput extends ComparisionOperatorsInput {
     @Field({ nullable: true })
     _not_eq?: number;
 
-    @Field(_ => [Number], { nullable: true })
+    @Field(_type => [Number], { nullable: true })
     _in?: number[];
 
-    @Field(_ => [Number], { nullable: true })
+    @Field(_type => [Number], { nullable: true })
     _not_in?: number[];
 
     @Field({ nullable: true })

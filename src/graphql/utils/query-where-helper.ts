@@ -3,12 +3,12 @@ import _ from 'lodash';
 import { Brackets, getCustomRepository, getMetadataArgsStorage, SelectQueryBuilder, WhereExpression } from 'typeorm';
 //import logger from './logger';
 import { GraphqlTypeOrmMapper } from './graphql-typeorm-mapper.util';
-import { BaseQueryWhereInput } from '../../shared/base-classes/base-query-where-input';
+import { BaseQueryWhereInput } from '@shared/base-classes/base-query-where-input';
 import {
     ComparisionOperatorsInput,
     ComparisionOperatorsValue,
 } from '../inputs/query-where-comparision-operators.input';
-import { BaseEntityRepository } from '../../shared/base-classes/base-entity-repository';
+import { BaseEntityRepository } from '@shared/base-classes/base-entity-repository';
 
 export type QueryWhereConditionOperator = 'AND' | 'OR';
 

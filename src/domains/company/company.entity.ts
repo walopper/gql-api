@@ -1,14 +1,14 @@
 import { Field, ID, ObjectType } from '@nestjs/graphql';
 import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
-import { Contact } from '../contact/contact.entity';
 import { IInstitution } from '../institution/institution.interface';
 import { AInstitution } from '../institution/institution.abstract';
-import { Connection } from '../../graphql/libs/cursor-connection/connection.type';
+import { Connection } from '@graphql/libs/cursor-connection/connection.type';
+import { Contact } from '@domains/contact/contact.entity';
 
 @ObjectType({ implements: IInstitution })
 @Entity({ name: 'company' })
 export class Company extends AInstitution {
-    @Field(_ => ID)
+    @Field(_type => ID)
     @Column()
     @PrimaryColumn()
     id: number;
@@ -25,7 +25,7 @@ export class Company extends AInstitution {
     @Column()
     crm_is_active: boolean;
 
-    @Field(type => [Contact], { name: 'contacts' })
+    @Field(_type => [Contact], { name: 'contacts' })
     @OneToMany(
         () => Contact,
         contact => contact.Company,
@@ -40,7 +40,7 @@ export class CompanyConnection extends Connection(Company) { }
 @ObjectType()
 @Entity({ name: 'company' })
 export class Company extends Insti {
-    @Field(_ => ID)
+    @Field(_type => ID)
     @Column()
     @PrimaryGeneratedColumn()
     id: number;

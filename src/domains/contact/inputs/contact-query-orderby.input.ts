@@ -1,11 +1,12 @@
-import { InputType, Field } from '@nestjs/graphql';
-import { CompanyQueryOrderByInput } from '../../company/inputs/company-query-orderby.input';
-import { BaseQueryOrderByInput } from '../../../shared/base-classes/base-query-orderby-input';
-import { QueryOrderByDirection } from '../../../shared/enums/query-orderby-direction.enum';
+
+import { CompanyQueryOrderByInput } from '@domains/company/inputs/company-query-orderby.input';
+import { Field, InputType } from '@nestjs/graphql';
+import { BaseQueryOrderByInput } from '@shared/base-classes/base-query-orderby-input';
+import { QueryOrderByDirection } from '@shared/enums/query-orderby-direction.enum';
 
 @InputType()
 export class ContactQueryOrderByInput extends BaseQueryOrderByInput {
-    @Field(_ => QueryOrderByDirection, { nullable: true })
+    @Field(_type => QueryOrderByDirection, { nullable: true })
     name?: QueryOrderByDirection;
 
     @Field({ nullable: true })

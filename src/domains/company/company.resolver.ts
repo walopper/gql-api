@@ -1,14 +1,14 @@
-import { Args, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
+import { Args, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { Company, CompanyConnection } from './company.entity';
-import { Contact, ContactConnection } from '../contact/contact.entity';
-import { ContactService } from '../contact/contact.service';
 import { CompanyService } from './company.service';
-import { DataloaderFn, Loader } from '../../graphql/libs/dataloader';
+import { DataloaderFn, Loader } from '@graphql/libs/dataloader';
 import { Inject, Injectable } from '@nestjs/common';
-import { Paginate, PaginateFn } from '../../graphql/libs/cursor-connection/paginate.decorator';
+import { Paginate, PaginateFn } from '@graphql/libs/cursor-connection/paginate.decorator';
 import { CompanyListArgs } from './args/company-list.args';
-import { ContactListArgs } from '../contact/args/contact-list.args';
-import { Fields } from '../../graphql/decorators/fields.decorator';
+import { Fields } from '@graphql/decorators/fields.decorator';
+import { ContactListArgs } from '@domains/contact/args/contact-list.args';
+import { Contact, ContactConnection } from '@domains/contact/contact.entity';
+import { ContactService } from '@domains/contact/contact.service';
 
 @Injectable()
 @Resolver(of => Company)
@@ -19,7 +19,7 @@ export class CompanyResolver {
     @Inject()
     protected companyService: CompanyService;
 
-    @Query(type => CompanyConnection, { name: 'companies' })
+    @Query(_type => CompanyConnection, { name: 'companies' })
     async getCompanies(
         @Paginate() paginate: PaginateFn<Company>,
         @Fields() fields: string[],
@@ -35,7 +35,7 @@ export class CompanyResolver {
         );
     }
 
-    @ResolveField(type => ContactConnection, { name: 'contacts' })
+    @ResolveField(_type => ContactConnection, { name: 'contacts' })
     async getContacts(
         @Loader({ typeOrm: 'Contacts' }) loader: DataloaderFn<number[], [Contact[], number]>,
         @Paginate() paginate: PaginateFn<Contact>,

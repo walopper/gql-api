@@ -1,4 +1,4 @@
-import { ComparisionOperatorsInput } from '../../graphql/inputs/query-where-comparision-operators.input';
+import { ComparisionOperatorsInput } from '@graphql/inputs/query-where-comparision-operators.input';
 
 export type QueryWhereInputValue = ComparisionOperatorsInput | BaseQueryWhereInput | BaseQueryWhereInput[];
 

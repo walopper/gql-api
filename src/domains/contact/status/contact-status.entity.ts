@@ -5,7 +5,7 @@ import { BaseEntity, Column, Entity, PrimaryColumn } from 'typeorm';
 @Entity({ name: 'lead_status' })
 export class ContactStatus extends BaseEntity {
 
-    @Field(_ => ID, { nullable: true })
+    @Field(_type => ID, { nullable: true })
     @Column()
     @PrimaryColumn()
     id: number;

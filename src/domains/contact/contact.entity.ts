@@ -1,10 +1,10 @@
 import { Field, ID, ObjectType, registerEnumType } from '@nestjs/graphql';
 import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { Connection } from '../../graphql/libs/cursor-connection/connection.type';
-import { EmailAddress } from '../../graphql/scalars/email-address.scalar';
-import { Company } from '../company/company.entity';
+import { Connection } from '@graphql/libs/cursor-connection/connection.type';
+import { EmailAddress } from '@graphql/scalars/email-address.scalar';
 import { ContactStage } from './stage/contact-stage.entity';
 import { ContactStatus } from './status/contact-status.entity';
+import { Company } from '@domains/company/company.entity';
 
 enum ContactSex {
     M = 'M',
@@ -18,13 +18,13 @@ registerEnumType(ContactSex, {
 @ObjectType()
 @Entity({ name: 'lead' })
 export class Contact extends BaseEntity {
-    @Field(_ => ID, { nullable: true })
+    @Field(_type => ID, { nullable: true })
     @Column()
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Field(type => Company, { name: 'company' })
-    @ManyToOne(_ => Company)
+    @Field(_type => Company, { name: 'company' })
+    @ManyToOne(_type => Company)
     @JoinColumn({ name: 'company_id' })
     Company?: Company;
 
@@ -35,16 +35,16 @@ export class Contact extends BaseEntity {
     @Column()
     sex: ContactSex;
 
-    @Field(type => ContactStage, { name: 'stage', nullable: true })
-    @OneToOne(type => ContactStage)
+    @Field(_type => ContactStage, { name: 'stage', nullable: true })
+    @OneToOne(_type => ContactStage)
     @JoinColumn({ name: 'stage_id' })
     Stage: ContactStage;
 
     @Column()
     stage_id: number;
 
-    @Field(type => ContactStatus, { name: 'status', nullable: true })
-    @OneToOne(type => ContactStatus)
+    @Field(_type => ContactStatus, { name: 'status', nullable: true })
+    @OneToOne(_type => ContactStatus)
     @JoinColumn({ name: 'status_id' })
     Status: ContactStatus;
 
@@ -91,7 +91,7 @@ export class Contact extends BaseEntity {
     @Column()
     name: string;
 
-    @Field(_ => EmailAddress, { nullable: true })
+    @Field(_type => EmailAddress, { nullable: true })
     @Column()
     email: string;
 

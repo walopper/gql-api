@@ -1,7 +1,7 @@
 import { Field, ID, ObjectType, registerEnumType } from '@nestjs/graphql';
 import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
-import { EmailAddress } from '../../graphql/scalars/email-address.scalar';
-import { Connection } from '../../graphql/libs/cursor-connection/connection.type';
+import { EmailAddress } from '@graphql/scalars/email-address.scalar';
+import { Connection } from '@graphql/libs/cursor-connection/connection.type';
 
 enum UserSex {
     M = 'M',
@@ -15,7 +15,7 @@ registerEnumType(UserSex, {
 @ObjectType()
 @Entity({ name: 'account' })
 export class User {
-    @Field(_ => ID, { nullable: true })
+    @Field(_type => ID, { nullable: true })
     @Column()
     @PrimaryGeneratedColumn()
     id: number;
@@ -50,7 +50,7 @@ export class User {
     @Column()
     sex: UserSex;
 
-    @Field(_ => EmailAddress, { nullable: true })
+    @Field(_type => EmailAddress, { nullable: true })
     @Column()
     email: string;
 
@@ -88,4 +88,4 @@ export class User {
 }
 
 @ObjectType()
-export class UserConnection extends Connection(User) {}
+export class UserConnection extends Connection(User) { }

@@ -10,7 +10,7 @@ export interface IConnection<TNode> {
 }
 
 export interface IConnectionClass<TNode> {
-    new (totalCount: number, pageInfo: IPageInfo, edges: IEdge<TNode>[]): IConnection<TNode>;
+    new(totalCount: number, pageInfo: IPageInfo, edges: IEdge<TNode>[]): IConnection<TNode>;
 }
 
 export const Connection = <TNode>(TNodeClass: Type<TNode>): IConnectionClass<TNode> => {
@@ -21,7 +21,7 @@ export const Connection = <TNode>(TNodeClass: Type<TNode>): IConnectionClass<TNo
         @Field({ description: `The position of this ${TNodeClass.name} item` })
         public cursor: string;
 
-        @Field(type => TNodeClass)
+        @Field(_type => TNodeClass)
         public node: TNode;
     }
 
@@ -36,15 +36,15 @@ export const Connection = <TNode>(TNodeClass: Type<TNode>): IConnectionClass<TNo
             this.edges = edges;
         }
 
-        @Field(type => Int, {
+        @Field(_type => Int, {
             description: `Total number of ${TNodeClass.name} items`,
         })
         public totalCount: number;
 
-        @Field(type => PageInfo)
+        @Field(_type => PageInfo)
         public pageInfo: PageInfo;
 
-        @Field(type => [EdgeClass])
+        @Field(_type => [EdgeClass])
         public edges: EdgeClass[];
     }
 
@@ -59,13 +59,13 @@ export class PaginationArgs {
     })
     public after?: string;
 
-    @Field(type => Int, { nullable: true })
+    @Field(_type => Int, { nullable: true })
     public first?: number;
 
     @Field({ nullable: true })
     public before?: string;
 
-    @Field(type => Int, {
+    @Field(_type => Int, {
         nullable: true,
         description: 'Cursor to the item before which last n items will be taken',
     })
