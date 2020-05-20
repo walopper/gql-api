@@ -42,5 +42,12 @@ export class ContactStatus extends BaseEntity {
     @Column()
     slug: string;
 
+    @Field({ nullable: true })
+    @Column()
+    updated_at: Date;
+
+    @Column()
+    deleted_at: Date;
+
 }
 
