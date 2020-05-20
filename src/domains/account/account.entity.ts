@@ -1,13 +1,12 @@
-import { Connection } from '@graphql/libs/cursor-connection/connection.type';
-import { Field, ID, ObjectType } from '@nestjs/graphql';
-import { Column, Entity, PrimaryColumn } from 'typeorm';
-import { EmailAddress } from '@graphql/scalars/email-address.scalar';
-import { AInstitution } from '@domains/institution/institution.abstract';
 import { IInstitution } from '@domains/institution/institution.interface';
+import { Connection } from '@graphql/libs/cursor-connection/connection.type';
+import { EmailAddress } from '@graphql/scalars/email-address.scalar';
+import { Field, ID, ObjectType } from '@nestjs/graphql';
+import { BaseEntity, Column, Entity, PrimaryColumn } from 'typeorm';
 
-@ObjectType({ implements: IInstitution })
+@ObjectType()
 @Entity({ name: 'account' })
-export class Account extends AInstitution {
+export class Account extends BaseEntity {
     @Field(_type => ID)
     @Column()
     @PrimaryColumn()

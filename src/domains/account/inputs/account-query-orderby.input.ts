@@ -4,9 +4,20 @@ import { QueryOrderByDirection } from '@shared/enums/query-orderby-direction.enu
 
 @InputType()
 export class AccountQueryOrderByInput extends BaseQueryOrderByInput {
-    @Field(_type => QueryOrderByDirection, { nullable: true })
-    name?: QueryOrderByDirection;
 
     @Field(_type => QueryOrderByDirection, { nullable: true })
-    crm_is_active?: QueryOrderByDirection;
+    first_name?: QueryOrderByDirection;
+
+    @Field(_type => QueryOrderByDirection, { nullable: true })
+    last_name?: QueryOrderByDirection;
+
+    @Field(_type => QueryOrderByDirection, { nullable: true })
+    username?: QueryOrderByDirection;
+
+    @Field(_type => QueryOrderByDirection, { nullable: true })
+    last_login?: QueryOrderByDirection;
+
+    @Field(_type => QueryOrderByDirection, { nullable: true })
+    created_at?: QueryOrderByDirection;
+
 }

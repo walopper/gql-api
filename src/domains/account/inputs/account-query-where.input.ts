@@ -15,11 +15,32 @@ export class AccountQueryWhereInput extends BaseQueryWhereInput {
     _or?: [AccountQueryWhereInput];
 
     @Field({ nullable: true })
+    company_id?: NumberComparisionOperatorsInput;
+
+    @Field({ nullable: true })
     id?: NumberComparisionOperatorsInput;
 
     @Field({ nullable: true })
-    name?: StringComparisionOperatorsInput;
+    first_name?: StringComparisionOperatorsInput;
 
     @Field({ nullable: true })
-    crm_is_active?: BooleanComparisionOperatorsInput;
+    last_name?: StringComparisionOperatorsInput;
+
+    @Field({ nullable: true })
+    username?: StringComparisionOperatorsInput;
+
+    @Field({ nullable: true })
+    email?: StringComparisionOperatorsInput;
+
+    @Field({ nullable: true })
+    internal_id?: StringComparisionOperatorsInput;
+
+    @Field({ nullable: true })
+    phone?: StringComparisionOperatorsInput;
+
+    @Field({ nullable: true })
+    phone2?: StringComparisionOperatorsInput;
+
+    @Field({ nullable: true })
+    active?: BooleanComparisionOperatorsInput;
 }
