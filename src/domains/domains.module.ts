@@ -11,7 +11,7 @@ import { AuthUserModule } from '@domains/core/auth-user/auth-user.module';
         AuthModule,
         ContactModule,
         CompanyModule,
-        UserModule,
+        UserModule
     ],
 })
 export class DomainsModule { }
