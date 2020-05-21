@@ -68,9 +68,39 @@ type ContactStatus {
   updated_at: DateTime
 }
 
+type ContactHistory {
+  id: ID
+  contact: Contact!
+  company_id: Float
+  lead_id: Float
+  source_id: Float
+  medium_id: Float
+  account_id: Float
+  department_id: Float
+  status: String
+  lead_address: String
+  resource_address: String
+  destination_address: String
+  quantity: Float
+  direction: String
+  message: String
+  vendor: String
+  vendor_resource_id: DateTime
+  created_at: DateTime
+  updated_at: DateTime
+}
+
+"""Provides ContactHistory item and a cursor to its position"""
+type ContactHistoryEdge {
+  """The position of this ContactHistory item"""
+  cursor: String!
+  node: ContactHistory!
+}
+
 type Contact {
   id: ID
   company: Company
+  contactHistory: [ContactHistory!]!
   sex: String
   stage: ContactStage
   status: ContactStatus
