@@ -37,7 +37,7 @@ export class Contact extends BaseEntity {
         () => ContactHistory,
         contactHistory => contactHistory.Contact,
     )
-    Contacts: Contact[];
+    ContactHistory: ContactHistory[];
 
     @Field({ nullable: true })
     @Column()
