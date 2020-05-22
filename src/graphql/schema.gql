@@ -41,6 +41,30 @@ type UserEdge {
   node: User!
 }
 
+type Source {
+  id: ID!
+  campaign_id: Float
+  channel_id: Float
+  name: String
+  description: String
+  cost: Float
+  hash: String
+  created_at: DateTime
+  updated_at: DateTime
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+"""Provides Source item and a cursor to its position"""
+type SourceEdge {
+  """The position of this Source item"""
+  cursor: String!
+  node: Source!
+}
+
 type ContactStage {
   id: ID
   position: Float
@@ -49,11 +73,6 @@ type ContactStage {
   slug: String
   updated_at: DateTime
 }
-
-"""
-A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
-"""
-scalar DateTime
 
 type ContactStatus {
   id: ID
@@ -70,11 +89,14 @@ type ContactStatus {
 
 type ContactHistory {
   id: ID
-  contact: Contact!
+  contact: Contact
+  contact_id: Float!
+  company: Company
   company_id: Float
   lead_id: Float
-  source_id: Float
+  source: Source
   medium_id: Float
+  user: User!
   account_id: Float
   department_id: Float
   status: String
@@ -97,13 +119,31 @@ type ContactHistoryEdge {
   node: ContactHistory!
 }
 
+type ContactHistoryConnection {
+  """Total number of ContactHistory items"""
+  totalCount: Int!
+  pageInfo: PageInfo!
+  edges: [ContactHistoryEdge!]!
+}
+
 type Contact {
   id: ID
   company: Company
-  contactHistory: [ContactHistory!]!
+  history(
+    """Cursor to the item after which first n items will be taken"""
+    after: String
+    first: Int
+    before: String
+
+    """Cursor to the item before which last n items will be taken"""
+    last: Int
+    where: ContactQueryWhereInput
+    order_by: [ContactQueryOrderByInput!]
+  ): ContactHistoryConnection
   sex: String
   stage: ContactStage
   status: ContactStatus
+  owner: User!
   first_name: String
   last_name: String
   birthdate: DateTime
@@ -124,46 +164,6 @@ type Contact {
   last_communication_interaction_at: DateTime
   created_at: DateTime
   updated_at: DateTime
-}
-
-"""Provides Contact item and a cursor to its position"""
-type ContactEdge {
-  """The position of this Contact item"""
-  cursor: String!
-  node: Contact!
-}
-
-type ContactConnection {
-  """Total number of Contact items"""
-  totalCount: Int!
-  pageInfo: PageInfo!
-  edges: [ContactEdge!]!
-}
-
-type Company implements IInstitution {
-  id: ID!
-  name: String
-  level: Float
-  timezone: String
-  is_active: Boolean
-  crm_is_active: Boolean
-  contacts(
-    """Cursor to the item after which first n items will be taken"""
-    after: String
-    first: Int
-    before: String
-
-    """Cursor to the item before which last n items will be taken"""
-    last: Int
-    where: ContactQueryWhereInput
-    order_by: [ContactQueryOrderByInput!]
-  ): ContactConnection!
-}
-
-interface IInstitution {
-  id: ID!
-  name: String
-  level: Float
 }
 
 input ContactQueryWhereInput {
@@ -238,6 +238,46 @@ input CompanyQueryOrderByInput {
   crm_is_active: QueryOrderByDirection
 }
 
+"""Provides Contact item and a cursor to its position"""
+type ContactEdge {
+  """The position of this Contact item"""
+  cursor: String!
+  node: Contact!
+}
+
+type ContactConnection {
+  """Total number of Contact items"""
+  totalCount: Int!
+  pageInfo: PageInfo!
+  edges: [ContactEdge!]!
+}
+
+type Company implements IInstitution {
+  id: ID!
+  name: String
+  level: Float
+  timezone: String
+  is_active: Boolean
+  crm_is_active: Boolean
+  contacts(
+    """Cursor to the item after which first n items will be taken"""
+    after: String
+    first: Int
+    before: String
+
+    """Cursor to the item before which last n items will be taken"""
+    last: Int
+    where: ContactQueryWhereInput
+    order_by: [ContactQueryOrderByInput!]
+  ): ContactConnection!
+}
+
+interface IInstitution {
+  id: ID!
+  name: String
+  level: Float
+}
+
 """Provides Company item and a cursor to its position"""
 type CompanyEdge {
   """The position of this Company item"""
@@ -250,48 +290,6 @@ type CompanyConnection {
   totalCount: Int!
   pageInfo: PageInfo!
   edges: [CompanyEdge!]!
-}
-
-type Account {
-  id: ID!
-  institution_id: Float
-  organization_id: Float
-  company_id: Float
-  staff_id: Float
-  first_name: String
-  last_name: String
-  username: String
-  password_hash: String
-  password_salt: String
-  last_login: String
-  last_login_attempt: String
-  login_tries: String
-  sex: String
-  email: EmailAddress
-  phone: String
-  phone_ext: String
-  phone2: String
-  phone2_ext: String
-  internal_id: String
-  language: String
-  receive_email_notifications: Boolean
-  receive_sms_notifications: Boolean
-  config_method_call_bypass_manual_confirmation: Boolean
-  config_method_call_allow_multiple_calls: Boolean
-  active: Boolean
-  activation_key: String
-  activation_key_expires_at: DateTime
-  remember_me_hash: String
-  password_key: String
-  password_key_expires_at: DateTime
-  updated_at: DateTime
-}
-
-"""Provides Account item and a cursor to its position"""
-type AccountEdge {
-  """The position of this Account item"""
-  cursor: String!
-  node: Account!
 }
 
 type Query {
@@ -318,6 +316,18 @@ type Query {
     order_by: [ContactQueryOrderByInput!]
     company_id: ID!
   ): ContactConnection!
+  contactHistory(
+    """Cursor to the item after which first n items will be taken"""
+    after: String
+    first: Int
+    before: String
+
+    """Cursor to the item before which last n items will be taken"""
+    last: Int
+    where: ContactQueryWhereInput
+    order_by: [ContactQueryOrderByInput!]
+    contact_id: ID!
+  ): ContactHistoryConnection!
 }
 
 type Mutation {

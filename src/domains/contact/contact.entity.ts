@@ -6,6 +6,8 @@ import { ContactStage } from './stage/contact-stage.entity';
 import { ContactStatus } from './status/contact-status.entity';
 import { Company } from '@domains/company/company.entity';
 import { ContactHistory } from './history/contact-history.entity';
+import { Source } from '@domains/source/source.entity';
+import { User } from '@domains/user/user.entity';
 
 enum ContactSex {
     M = 'M',
@@ -32,12 +34,12 @@ export class Contact extends BaseEntity {
     @Column()
     company_id: number;
 
-    @Field(_type => [ContactHistory], { name: 'contactHistory' })
+    @Field(_type => [ContactHistory], { name: 'history' })
     @OneToMany(
         () => ContactHistory,
-        contactHistory => contactHistory.Contact,
+        history => history.Contact,
     )
-    ContactHistory: ContactHistory[];
+    History: ContactHistory[];
 
     @Field({ nullable: true })
     @Column()
@@ -61,19 +63,12 @@ export class Contact extends BaseEntity {
 
     // @Field()
     // @Column()
-    // status: string;
-
-    // @Field()
-    // @Column()
     // campaign: Campaign;
 
-    // @Field()
-    // @Column()
-    // source: Source;
-
-    // @Field()
-    // @Column()
-    // owner: User;
+    @Field()
+    @OneToOne(_type => User)
+    @JoinColumn({ name: 'account_id' })
+    owner: User;
 
     // @Field()
     // @Column()

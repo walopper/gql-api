@@ -1,33 +1,43 @@
+import { SourceRepository } from './../source/source.repository';
+import { SourceService } from './../source/source.service';
 import { CompanyModule } from '@domains/company/company.module';
+import { Contact } from '@domains/contact/contact.entity';
+import { ContactRepository } from '@domains/contact/contact.repository';
+import { ContactResolver } from '@domains/contact/contact.resolver';
+import { ContactService } from '@domains/contact/contact.service';
+import { ContactHistoryRepository } from '@domains/contact/history/contact-history.repository';
+import { ContactHistoryResolver } from '@domains/contact/history/contact-history.resolver';
+import { ContactHistoryService } from '@domains/contact/history/contact-history.service';
+import { ContactStageRepository } from '@domains/contact/stage/contact-stage.repository';
+import { ContactStageService } from '@domains/contact/stage/contact-stage.service';
+import { ContactStatus } from '@domains/contact/status/contact-status.entity';
+import { ContactStatusRepository } from '@domains/contact/status/contact-status.repository';
+import { ContactStatusService } from '@domains/contact/status/contact-status.service';
 import { FileUploadResolver } from '@domains/core/file-upload.resolver';
 import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Contact } from './contact.entity';
-import { ContactRepository } from './contact.repository';
-import { ContactResolver } from './contact.resolver';
-import { ContactService } from './contact.service';
-import { ContactStageRepository } from './stage/contact-stage.repository';
-import { ContactStageService } from './stage/contact-stage.service';
-import { ContactStatus } from './status/contact-status.entity';
-import { ContactStatusRepository } from './status/contact-status.repository';
-import { ContactStatusService } from './status/contact-status.service';
 
 @Module({
     imports: [
         forwardRef(() => CompanyModule),
         TypeOrmModule.forFeature([
             Contact,
+            ContactHistoryRepository,
             ContactRepository,
+            ContactStageRepository,
             ContactStatus,
             ContactStatusRepository,
-            ContactStageRepository,
+            SourceRepository,
         ])],
     providers: [
+        ContactHistoryService,
         ContactResolver,
+        ContactHistoryResolver,
         ContactService,
-        FileUploadResolver,
+        ContactStageService,
         ContactStatusService,
-        ContactStageService
+        FileUploadResolver,
+        SourceService,
     ],
     exports: [
         TypeOrmModule,

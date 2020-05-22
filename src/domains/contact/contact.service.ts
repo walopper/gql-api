@@ -24,7 +24,7 @@ export class ContactService extends BaseEntityService<Contact, ServiceGetMethodO
             throw new UnauthorizedException('No tiene permiso del field sex');
         }
 
-        console.log(await this.authUserService.getUser());
+        // console.log(await this.authUserService.getUser());
 
         //Validar que el usuario loggeado tenga permiso para la compañía solicitada
         /*

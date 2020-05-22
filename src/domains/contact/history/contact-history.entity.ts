@@ -1,7 +1,10 @@
+import { Source } from '@domains/source/source.entity';
 import { Connection } from '@graphql/libs/cursor-connection/connection.type';
 import { Field, ID, ObjectType } from '@nestjs/graphql';
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { BaseEntity, Column, Entity, PrimaryGeneratedColumn, ManyToOne, JoinColumn, OneToOne } from 'typeorm';
 import { Contact } from '../contact.entity';
+import { Company } from '@domains/company/company.entity';
+import { User } from '@domains/user/user.entity';
 
 @ObjectType()
 @Entity({ name: 'lead_history' })
@@ -13,8 +16,17 @@ export class ContactHistory extends BaseEntity {
 
     @Field(_type => Contact, { name: 'contact' })
     @ManyToOne(_type => Contact)
-    @JoinColumn({ name: 'contact_id' })
+    @JoinColumn({ name: 'lead_id' })
     Contact?: Contact;
+
+    @Field()
+    @Column({ name: 'lead_id' })
+    contact_id: number;
+
+    @Field(_type => Company, { name: 'company' })
+    @ManyToOne(_type => Company)
+    @JoinColumn({ name: 'company_id' })
+    Company?: Company;
 
     @Field({ nullable: true })
     @Column()
@@ -24,13 +36,22 @@ export class ContactHistory extends BaseEntity {
     @Column()
     lead_id: number;
 
-    @Field({ nullable: true })
+    @Field(_type => Source, { name: 'source', nullable: true })
+    @OneToOne(_type => Source)
+    @JoinColumn({ name: 'source_id' })
+    Stage: Source;
+
     @Column()
     source_id: number;
 
     @Field({ nullable: true })
     @Column()
     medium_id: number;
+
+    @Field(_type => User, { name: 'user' })
+    @ManyToOne(_type => User)
+    @JoinColumn({ name: 'account_id' })
+    User?: User;
 
     @Field({ nullable: true })
     @Column()

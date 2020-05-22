@@ -1,5 +1,5 @@
 import { EntityRepository, QueryRunner } from 'typeorm';
-import { Contact } from './contact.entity';
+import { Contact } from '@domains/contact/contact.entity';
 import { QueryPaginationOptions } from '@shared/types/query-options.type';
 import { SelectQueryBuilder } from '@shared/utils/select-query-builder';
 import { BaseEntityRepository } from '@shared/base-classes/base-entity-repository';

@@ -1,18 +1,20 @@
-import { ContactStatusRepository } from './status/contact-status.repository';
-import { Args, ID, Query, ResolveField, Resolver, Parent } from '@nestjs/graphql';
+import { Company } from '@domains/company/company.entity';
+import { CompanyService } from '@domains/company/company.service';
+import { ContactHistoryListArgs } from '@domains/contact/history/args/contact-history-list.args';
+import { ContactHistory, ContactHistoryConnection } from '@domains/contact/history/contact-history.entity';
+import { ContactHistoryService } from '@domains/contact/history/contact-history.service';
+import { Fields } from '@graphql/decorators/fields.decorator';
 import { Paginate, PaginateFn } from '@graphql/libs/cursor-connection/paginate.decorator';
 import { DataloaderFn, Loader } from '@graphql/libs/dataloader';
-import { Contact, ContactConnection } from './contact.entity';
 import { Inject } from '@nestjs/common';
-import { ContactService } from './contact.service';
-import { ContactListArgs } from './args/contact-list.args';
-import { Fields } from '@graphql/decorators/fields.decorator';
-import { ContactStatus as ContactStatus } from './status/contact-status.entity';
-import { ContactStatusService } from './status/contact-status.service';
-import { ContactStage } from './stage/contact-stage.entity';
-import { ContactStageService } from './stage/contact-stage.service';
-import { CompanyService } from '@domains/company/company.service';
-import { Company } from '@domains/company/company.entity';
+import { Args, ID, Query, ResolveField, Resolver } from '@nestjs/graphql';
+import { ContactListArgs } from '@domains/contact/args/contact-list.args';
+import { Contact, ContactConnection } from '@domains/contact/contact.entity';
+import { ContactService } from '@domains/contact/contact.service';
+import { ContactStage } from '@domains/contact/stage/contact-stage.entity';
+import { ContactStageService } from '@domains/contact/stage/contact-stage.service';
+import { ContactStatus as ContactStatus } from '@domains/contact/status/contact-status.entity';
+import { ContactStatusService } from '@domains/contact/status/contact-status.service';
 
 @Resolver(of => Contact)
 export class ContactResolver {
@@ -28,6 +30,9 @@ export class ContactResolver {
     @Inject()
     protected contactStageService: ContactStageService;
 
+    @Inject()
+    protected contactHistoryService: ContactHistoryService;
+
     @Query(_type => ContactConnection, { name: 'contactsByCompanyId' })
     async getCompanyContacts(
         @Paginate() paginate: PaginateFn<Contact>,
@@ -35,8 +40,8 @@ export class ContactResolver {
         @Args({ name: 'company_id', type: () => ID }) companyId: Company['id'],
         @Args() listArgs: ContactListArgs,
     ): Promise<[Contact[], number]> {
-        return paginate(pagination =>
-            this.contactService.getListAndCount(
+        return paginate(pagination => {
+            return this.contactService.getListAndCount(
                 {
                     fields,
                     pagination,
@@ -44,8 +49,8 @@ export class ContactResolver {
                     orderBy: listArgs.order_by,
                 },
                 { companyId },
-            ),
-        );
+            )
+        });
     }
 
     /**
@@ -87,6 +92,42 @@ export class ContactResolver {
         @Fields() fields: string[],
     ): Promise<ContactStage> {
         return loader(async (stageIds: number[]) => this.contactStageService.getList({ fields, where: { id: { _in: stageIds } } }));
+    }
+
+    /**
+     * resolver for contact history
+     * @param loader 
+     * @param paginate 
+     * @param fields 
+     * @param args 
+     */
+    @ResolveField(_type => ContactHistoryConnection, { name: 'history', nullable: true })
+    async getContactHistory(
+        @Loader({ typeOrm: 'ContactHistory' }) loader: DataloaderFn<number[], [ContactHistory[], number]>,
+        @Paginate() paginate: PaginateFn<ContactHistory>,
+        @Fields() fields: string[],
+        @Args() args: ContactHistoryListArgs,
+    ): Promise<[ContactHistory[], number]> {
+        return paginate(async pagination =>
+            loader(async (contacts: number[]) => {
+                return Promise.all(
+                    contacts.map(contact => {
+                        //@ts-ignore
+                        args.where = { contact_id: { _eq: contact.id } };
+                        return this.contactHistoryService.getListAndCount(
+                            {
+                                fields,
+                                pagination,
+                                where: args.where,
+                                orderBy: args.order_by,
+                            },
+                            //@ts-ignore
+                            { contactId: contact.id }
+                        );
+                    }),
+                )
+            })
+        )
     }
 
 }
