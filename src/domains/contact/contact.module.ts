@@ -16,6 +16,8 @@ import { ContactStatusService } from '@domains/contact/status/contact-status.ser
 import { FileUploadResolver } from '@domains/core/file-upload.resolver';
 import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { MediumService } from '@domains/medium/medium.service';
+import { MediumRepository } from '@domains/medium/medium.repository';
 
 @Module({
     imports: [
@@ -27,6 +29,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
             ContactStageRepository,
             ContactStatus,
             ContactStatusRepository,
+            MediumRepository,
             SourceRepository,
         ])],
     providers: [
@@ -37,6 +40,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
         ContactStageService,
         ContactStatusService,
         FileUploadResolver,
+        MediumService,
         SourceService,
     ],
     exports: [

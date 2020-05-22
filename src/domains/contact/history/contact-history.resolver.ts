@@ -2,16 +2,18 @@ import { Company } from '@domains/company/company.entity';
 import { CompanyService } from '@domains/company/company.service';
 import { Contact } from '@domains/contact/contact.entity';
 import { ContactService } from '@domains/contact/contact.service';
+import { ContactHistoryListArgs } from '@domains/contact/history/args/contact-history-list.args';
+import { ContactHistory, ContactHistoryConnection } from '@domains/contact/history/contact-history.entity';
+import { ContactHistoryService } from '@domains/contact/history/contact-history.service';
+import { Medium } from '@domains/medium/medium.entity';
+import { MediumService } from '@domains/medium/medium.service';
+import { Source } from '@domains/source/source.entity';
+import { SourceService } from '@domains/source/source.service';
 import { Fields } from '@graphql/decorators/fields.decorator';
 import { Paginate, PaginateFn } from '@graphql/libs/cursor-connection/paginate.decorator';
 import { DataloaderFn, Loader } from '@graphql/libs/dataloader';
 import { Inject } from '@nestjs/common';
 import { Args, ID, Query, ResolveField, Resolver } from '@nestjs/graphql';
-import { ContactHistoryListArgs } from './args/contact-history-list.args';
-import { ContactHistory, ContactHistoryConnection } from './contact-history.entity';
-import { ContactHistoryService } from './contact-history.service';
-import { Source } from '@domains/source/source.entity';
-import { SourceService } from '@domains/source/source.service';
 
 @Resolver(_of => ContactHistory)
 export class ContactHistoryResolver {
@@ -26,6 +28,9 @@ export class ContactHistoryResolver {
 
     @Inject()
     protected sourceService: SourceService;
+
+    @Inject()
+    protected mediumService: MediumService;
 
     @Query(_type => ContactHistoryConnection, { name: 'contactHistory' })
     async getContactHistory(
@@ -85,8 +90,8 @@ export class ContactHistoryResolver {
      * @param fields 
      */
     @ResolveField(_type => Source, { name: 'source', nullable: true })
-    async getStatus(
-        @Loader({ typeOrm: 'Status' }) loader: DataloaderFn<number[], Source>,
+    async getSource(
+        @Loader({ typeOrm: 'Source' }) loader: DataloaderFn<number[], Source>,
         @Fields() fields: string[],
     ): Promise<Source> {
         return loader(async (statuses: any[]) => {
@@ -100,4 +105,23 @@ export class ContactHistoryResolver {
         });
     }
 
+    /**
+     * Resolver for medium field
+     * @param loader 
+     * @param fields 
+     */
+    @ResolveField(_type => Medium, { name: 'medium', nullable: true })
+    async getMedium(
+        @Loader({ typeOrm: 'Medium' }) loader: DataloaderFn<number[], Medium>,
+        @Fields() fields: string[],
+    ): Promise<Medium> {
+        return loader(async (mediums: any[]) => {
+            return this.mediumService.getList({
+                fields,
+                where: {
+                    id: { _in: mediums }
+                }
+            })
+        });
+    }
 }

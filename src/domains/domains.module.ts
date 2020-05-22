@@ -5,6 +5,7 @@ import { UserModule } from '@domains/user/user.module';
 import { AuthModule } from '@domains/core/auth/auth.module';
 import { AuthUserModule } from '@domains/core/auth-user/auth-user.module';
 import { SourceModule } from '@domains/source/source.module';
+import { MediumModule } from '@domains/medium/medium.module';
 
 @Module({
     imports: [
@@ -12,6 +13,7 @@ import { SourceModule } from '@domains/source/source.module';
         AuthUserModule,
         CompanyModule,
         ContactModule,
+        MediumModule,
         SourceModule,
         UserModule,
     ],

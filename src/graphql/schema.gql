@@ -87,6 +87,25 @@ type ContactStatus {
   updated_at: DateTime
 }
 
+type Medium {
+  id: ID!
+  type: String
+  slug: String
+  is_chat: Boolean
+  is_active: Boolean
+  name_en: String
+  name_es: String
+  created_at: DateTime
+  updated_at: DateTime
+}
+
+"""Provides Medium item and a cursor to its position"""
+type MediumEdge {
+  """The position of this Medium item"""
+  cursor: String!
+  node: Medium!
+}
+
 type ContactHistory {
   id: ID
   contact: Contact
@@ -95,7 +114,7 @@ type ContactHistory {
   company_id: Float
   lead_id: Float
   source: Source
-  medium_id: Float
+  medium: Medium
   user: User!
   account_id: Float
   department_id: Float

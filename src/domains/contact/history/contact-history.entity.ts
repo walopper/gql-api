@@ -5,6 +5,7 @@ import { BaseEntity, Column, Entity, PrimaryGeneratedColumn, ManyToOne, JoinColu
 import { Contact } from '../contact.entity';
 import { Company } from '@domains/company/company.entity';
 import { User } from '@domains/user/user.entity';
+import { Medium } from '@domains/medium/medium.entity';
 
 @ObjectType()
 @Entity({ name: 'lead_history' })
@@ -39,12 +40,16 @@ export class ContactHistory extends BaseEntity {
     @Field(_type => Source, { name: 'source', nullable: true })
     @OneToOne(_type => Source)
     @JoinColumn({ name: 'source_id' })
-    Stage: Source;
+    Source: Source;
 
     @Column()
     source_id: number;
 
-    @Field({ nullable: true })
+    @Field(_type => Medium, { name: 'medium', nullable: true })
+    @OneToOne(_type => Medium)
+    @JoinColumn({ name: 'medium_id' })
+    Medium: Medium;
+
     @Column()
     medium_id: number;
 
