@@ -95,11 +95,10 @@ export class ContactHistoryResolver {
         @Fields() fields: string[],
     ): Promise<Source> {
         return loader(async (statuses: any[]) => {
-            const statusIds = statuses.map(status => +status.id)
             return this.sourceService.getList({
                 fields,
                 where: {
-                    id: { _in: statusIds }
+                    id: { _in: statuses }
                 }
             })
         });

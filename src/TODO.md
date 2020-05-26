@@ -11,6 +11,9 @@
 
 #### Feature flag
 - https://featureflags.io/node-js-feature-flags/
+- https://elements.heroku.com/buttons/unleash/unleash
+- https://www.optimizely.com/rollouts/
+- https://github.com/Unleash/unleash-client-node
 
 
 #### Abstract file system library
