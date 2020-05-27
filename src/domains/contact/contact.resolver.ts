@@ -1,20 +1,21 @@
+import { ValidationPipe } from './../../shared/utils/validation.pipe';
 import { Company } from '@domains/company/company.entity';
 import { CompanyService } from '@domains/company/company.service';
-import { ContactHistoryListArgs } from '@domains/contact/history/args/contact-history-list.args';
-import { ContactHistory, ContactHistoryConnection } from '@domains/contact/history/contact-history.entity';
-import { ContactHistoryService } from '@domains/contact/history/contact-history.service';
-import { Fields } from '@graphql/decorators/fields.decorator';
-import { Paginate, PaginateFn } from '@graphql/libs/cursor-connection/paginate.decorator';
-import { DataloaderFn, Loader } from '@graphql/libs/dataloader';
-import { Inject } from '@nestjs/common';
-import { Args, ID, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { ContactListArgs } from '@domains/contact/args/contact-list.args';
 import { Contact, ContactConnection } from '@domains/contact/contact.entity';
 import { ContactService } from '@domains/contact/contact.service';
+import { ContactHistoryListArgs } from '@domains/contact/history/args/contact-history-list.args';
+import { ContactHistory, ContactHistoryConnection } from '@domains/contact/history/contact-history.entity';
+import { ContactHistoryService } from '@domains/contact/history/contact-history.service';
 import { ContactStage } from '@domains/contact/stage/contact-stage.entity';
 import { ContactStageService } from '@domains/contact/stage/contact-stage.service';
 import { ContactStatus as ContactStatus } from '@domains/contact/status/contact-status.entity';
 import { ContactStatusService } from '@domains/contact/status/contact-status.service';
+import { Fields } from '@graphql/decorators/fields.decorator';
+import { Paginate, PaginateFn } from '@graphql/libs/cursor-connection/paginate.decorator';
+import { DataloaderFn, Loader } from '@graphql/libs/dataloader';
+import { Inject, UsePipes } from '@nestjs/common';
+import { Args, ID, Query, ResolveField, Resolver } from '@nestjs/graphql';
 
 @Resolver(of => Contact)
 export class ContactResolver {
@@ -34,6 +35,7 @@ export class ContactResolver {
     protected contactHistoryService: ContactHistoryService;
 
     @Query(_type => ContactConnection, { name: 'contactsByCompanyId' })
+    @UsePipes(ValidationPipe)
     async getCompanyContacts(
         @Paginate() paginate: PaginateFn<Contact>,
         @Fields() fields: string[],

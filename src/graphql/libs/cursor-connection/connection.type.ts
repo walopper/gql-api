@@ -1,7 +1,8 @@
-import { ObjectType, Field, Int, ArgsType } from '@nestjs/graphql';
+import { Type } from '@nestjs/common';
+import { ArgsType, Field, Int, ObjectType } from '@nestjs/graphql';
+import { IsInt, IsNumber, IsOptional, IsString, Max, Min } from 'class-validator';
 import { IEdge } from './edge.type';
 import { IPageInfo, PageInfo } from './pageinfo.type';
-import { Type } from '@nestjs/common';
 
 export interface IConnection<TNode> {
     totalCount: number;
@@ -59,12 +60,23 @@ export class PaginationArgs {
     })
     public after?: string;
 
+    @IsInt()
+    @IsOptional()
+    @Max(200, { message: 'Limite demasiado grande' })
+    @Min(1)
+    @IsNumber()
     @Field(_type => Int, { nullable: true })
     public first?: number;
 
+    @IsString()
+    @IsOptional()
     @Field({ nullable: true })
     public before?: string;
 
+    @IsInt()
+    @IsOptional()
+    @Max(200)
+    @Min(1)
     @Field(_type => Int, {
         nullable: true,
         description: 'Cursor to the item before which last n items will be taken',
