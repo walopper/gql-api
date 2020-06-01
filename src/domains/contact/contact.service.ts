@@ -34,9 +34,7 @@ export class ContactService extends BaseEntityService<Contact, ServiceGetMethodO
         */
 
         //Ejemplo de como limitar al usuario a solo ver los contactos de su compañía
-        if (options.companyId > 0) {
-            query.andWhere(`${query.alias}.company_id = :contactCompanyId`, { contactCompanyId: options.companyId });
-        }
+        query.andWhere(`${query.alias}.company_id = :contactCompanyId`, { contactCompanyId: options.companyId });
     }
 
     protected async afterGet(
