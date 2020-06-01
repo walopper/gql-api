@@ -25,10 +25,10 @@ export abstract class BaseEntityService<
     ServiceGetMethodOptions extends BaseServiceGetMethodOptions = {},
     ServiceCreateMethodOptions extends BaseServiceCreateMethodOptions = {},
     ServiceUpdateMethodOptions extends BaseServiceUpdateMethodOptions = {}
-> {
+    > {
     protected abstract readonly repository: BaseEntityRepository<Entity>;
 
-    constructor(protected readonly authUserService: AuthUserService) {}
+    constructor(protected readonly authUserService: AuthUserService) { }
 
     private getQueryBuilder<T extends BaseQueryWhereInput, U extends BaseQueryOrderByInput>(
         queryOptions: QueryOptions<T, U>,
@@ -40,14 +40,14 @@ export abstract class BaseEntityService<
         query: SelectQueryBuilder<Entity>,
         queryOptions: QueryOptions<T, U>,
         options: BaseServiceGetMethodOptions,
-    ): Promise<void> {}
+    ): Promise<void> { }
 
     protected async afterGet<T extends BaseQueryWhereInput, U extends BaseQueryOrderByInput>(
         query: SelectQueryBuilder<Entity>,
         queryOptions: QueryOptions<T, U>,
         options: BaseServiceGetMethodOptions,
         result: Entity[],
-    ): Promise<void> {}
+    ): Promise<void> { }
 
     public async getListAndCount<T extends BaseQueryWhereInput, U extends BaseQueryOrderByInput>(
         queryOptions: QueryOptions<T, U>,

@@ -13,7 +13,7 @@ import { Fields } from '@graphql/decorators/fields.decorator';
 import { Paginate, PaginateFn } from '@graphql/libs/cursor-connection/paginate.decorator';
 import { DataloaderFn, Loader } from '@graphql/libs/dataloader';
 import { Inject } from '@nestjs/common';
-import { Args, ID, Query, ResolveField, Resolver } from '@nestjs/graphql';
+import { Args, ID, Query, ResolveField, Resolver, Parent } from '@nestjs/graphql';
 
 @Resolver(_of => ContactHistory)
 export class ContactHistoryResolver {
@@ -37,6 +37,7 @@ export class ContactHistoryResolver {
         @Paginate() paginate: PaginateFn<ContactHistory>,
         @Fields() fields: string[],
         @Args({ name: 'contact_id', type: () => ID }) contactId: Contact['id'],
+        @Args({ name: 'company_id', type: () => ID }) companyId: Company['id'],
         @Args() listArgs: ContactHistoryListArgs,
     ): Promise<[ContactHistory[], number]> {
         return paginate(pagination => {
@@ -47,7 +48,7 @@ export class ContactHistoryResolver {
                     where: listArgs.where,
                     orderBy: listArgs.order_by,
                 },
-                { contactId },
+                { contactId, companyId },
             )
         });
     }
@@ -61,11 +62,16 @@ export class ContactHistoryResolver {
     async getContact(
         @Loader({ typeOrm: 'Contact' }) loader: DataloaderFn<number[], Contact>,
         @Fields() fields: string[],
+        @Parent() parent
     ): Promise<Contact> {
-        return loader(async (contacts: any[]) => {
-            // const contactsIds = contacts.map(contact => contact.id);
-            const contactsIds = contacts.map(contact => +contact);
-            return this.contactService.getList({ fields, where: { id: { _in: contactsIds } } });
+        return loader(async (contactsIds: number[]) => {
+            return this.contactService.getList(
+                {
+                    fields,
+                    where: { id: { _in: contactsIds } }
+                },
+                { companyId: parent.company_id }
+            );
         });
     }
 

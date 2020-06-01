@@ -25,7 +25,7 @@ export class Role {
     nestedset_level: number;
 
     @OneToMany(
-        type => PermissionRule,
+        _type => PermissionRule,
         permission => permission.Role,
     )
     PermissionRules: PermissionRule[];

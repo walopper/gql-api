@@ -345,6 +345,7 @@ type Query {
     last: Int
     where: ContactQueryWhereInput
     order_by: [ContactQueryOrderByInput!]
+    company_id: ID!
     contact_id: ID!
   ): ContactHistoryConnection!
 }

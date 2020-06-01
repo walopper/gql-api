@@ -9,8 +9,11 @@ import { AuthModule } from '@domains/core/auth/auth.module';
 @Module({
     imports: [
         NestGraphQLModule.forRoot({
+            // debug: true, // false in prod
+            // playground: true, // false in prod
             useGlobalPrefix: true,
             autoSchemaFile: process.cwd() + '/src/graphql/schema.gql',
+            fieldResolverEnhancers: ['interceptors'],
             formatError,
             uploads: {
                 maxFileSize: 10000000,
