@@ -6,7 +6,7 @@ import { RedisService } from 'nestjs-redis';
 import { REQUEST } from '@nestjs/core';
 
 @Injectable({ scope: Scope.REQUEST })
-export class AuthUserService {
+export class LoggedUserService {
     @InjectRepository(UserRepository)
     protected readonly userRepository: UserRepository;
 
@@ -85,5 +85,9 @@ export class AuthUserService {
      */
     protected getUserSessionDataCachekey(id: number): string {
         return `auth:user:${id}:data`;
+    }
+
+    public hasInstitutionAccess(companiesIds: number[]): boolean {
+        return true;
     }
 }

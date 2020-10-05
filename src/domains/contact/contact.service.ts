@@ -1,18 +1,23 @@
 import { Company } from '@domains/company/company.entity';
-import { Injectable, Scope, UnauthorizedException } from '@nestjs/common';
+import { Contact } from '@domains/contact/contact.entity';
+import { ContactRepository } from '@domains/contact/contact.repository';
+import { ContactQueryOrderByInput } from '@domains/contact/inputs/contact-query-orderby.input';
+import { ContactQueryWhereInput } from '@domains/contact/inputs/contact-query-where.input';
+import { LoggedUserService } from '@domains/core/logged-user/logged-user.service';
+import { Injectable, Scope, UnauthorizedException, Inject, forwardRef } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BaseEntityService, BaseServiceGetMethodOptions } from '@shared/base-classes/base-entity-service';
 import { QueryOptions } from '@shared/types/query-options.type';
 import { SelectQueryBuilder } from '@shared/utils/select-query-builder';
-import { Contact } from './contact.entity';
-import { ContactRepository } from './contact.repository';
-import { ContactQueryOrderByInput } from './inputs/contact-query-orderby.input';
-import { ContactQueryWhereInput } from './inputs/contact-query-where.input';
+import _ from 'lodash';
 
 @Injectable({ scope: Scope.REQUEST })
 export class ContactService extends BaseEntityService<Contact, ServiceGetMethodOptions> {
     @InjectRepository(ContactRepository)
     protected readonly repository: ContactRepository;
+
+    @Inject(LoggedUserService)
+    protected readonly loggedUserService: LoggedUserService;
 
     protected async beforeGet(
         query: SelectQueryBuilder<Contact>,
@@ -24,14 +29,12 @@ export class ContactService extends BaseEntityService<Contact, ServiceGetMethodO
             throw new UnauthorizedException('No tiene permiso del field sex');
         }
 
-        // console.log(await this.authUserService.getUser());
+        // const loggedUser = await this.loggedUserService.getUser();
 
         //Validar que el usuario loggeado tenga permiso para la compañía solicitada
-        /*
-        if (!this.loggedUserService.hasInstitutionAccess(options.companyId)) {
-            throw new UnauthorizedException('No tiene permiso del field sex');
+        if (!this.loggedUserService.hasInstitutionAccess([options.companyId])) {
+            throw new UnauthorizedException('You don\'t have acess to this company');
         }
-        */
 
         //Ejemplo de como limitar al usuario a solo ver los contactos de su compañía
         query.andWhere(`${query.alias}.company_id = :contactCompanyId`, { contactCompanyId: options.companyId });
@@ -45,12 +48,11 @@ export class ContactService extends BaseEntityService<Contact, ServiceGetMethodO
     ): Promise<void> {
         //Validar que el usuario loggeado tenga permiso para la compañía que recibio
         //Parece repetitivo pero si hace un service.findOne, no se valida en el 'beforeGet'
-        /*
         const companiesIds = _.map(result, 'company_id');
         if (!this.loggedUserService.hasInstitutionAccess(companiesIds)) {
             throw new UnauthorizedException('No tiene permiso del field sex');
         }
-        */
+
     }
 }
 

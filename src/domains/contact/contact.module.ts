@@ -1,5 +1,3 @@
-import { SourceRepository } from './../source/source.repository';
-import { SourceService } from './../source/source.service';
 import { CompanyModule } from '@domains/company/company.module';
 import { Contact } from '@domains/contact/contact.entity';
 import { ContactRepository } from '@domains/contact/contact.repository';
@@ -13,11 +11,15 @@ import { ContactStageService } from '@domains/contact/stage/contact-stage.servic
 import { ContactStatus } from '@domains/contact/status/contact-status.entity';
 import { ContactStatusRepository } from '@domains/contact/status/contact-status.repository';
 import { ContactStatusService } from '@domains/contact/status/contact-status.service';
+import { LoggedUserService } from '@domains/core/logged-user/logged-user.service';
 import { FileUploadResolver } from '@domains/core/file-upload.resolver';
+import { MediumRepository } from '@domains/medium/medium.repository';
+import { MediumService } from '@domains/medium/medium.service';
+import { UserRepository } from '@domains/user/user.repository';
 import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { MediumService } from '@domains/medium/medium.service';
-import { MediumRepository } from '@domains/medium/medium.repository';
+import { SourceRepository } from './../source/source.repository';
+import { SourceService } from './../source/source.service';
 
 @Module({
     imports: [
@@ -31,15 +33,17 @@ import { MediumRepository } from '@domains/medium/medium.repository';
             ContactStatusRepository,
             MediumRepository,
             SourceRepository,
+            UserRepository,
         ])],
     providers: [
+        ContactHistoryResolver,
         ContactHistoryService,
         ContactResolver,
-        ContactHistoryResolver,
         ContactService,
         ContactStageService,
         ContactStatusService,
         FileUploadResolver,
+        LoggedUserService,
         MediumService,
         SourceService,
     ],

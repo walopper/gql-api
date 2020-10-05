@@ -5,7 +5,7 @@ import { BaseQueryOrderByInput } from './base-query-orderby-input';
 import { Inject, Injectable, Scope } from '@nestjs/common';
 import { CONTEXT } from '@nestjs/graphql';
 import { BaseEntityRepository } from './base-entity-repository';
-import { AuthUserService } from '@domains/core/auth-user/auth-user.service';
+import { LoggedUserService } from '@domains/core/logged-user/logged-user.service';
 
 export interface BaseServiceGetMethodOptions {
     [key: string]: unknown;
@@ -28,7 +28,7 @@ export abstract class BaseEntityService<
     > {
     protected abstract readonly repository: BaseEntityRepository<Entity>;
 
-    constructor(protected readonly authUserService: AuthUserService) { }
+    constructor(protected readonly loggedUserService: LoggedUserService) { }
 
     private getQueryBuilder<T extends BaseQueryWhereInput, U extends BaseQueryOrderByInput>(
         queryOptions: QueryOptions<T, U>,

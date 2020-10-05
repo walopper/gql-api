@@ -8,8 +8,20 @@ import { CompanyResolver } from './company.resolver';
 import { CompanyService } from './company.service';
 
 @Module({
-    imports: [forwardRef(() => ContactModule), TypeOrmModule.forFeature([Institution, Company, CompanyRepository])],
-    providers: [CompanyResolver, CompanyService],
-    exports: [TypeOrmModule, CompanyService],
+    imports: [
+        forwardRef(() => ContactModule),
+        TypeOrmModule.forFeature([
+            Company,
+            CompanyRepository,
+            Institution,
+        ])],
+    providers: [
+        CompanyResolver,
+        CompanyService,
+    ],
+    exports: [
+        CompanyService,
+        TypeOrmModule,
+    ],
 })
 export class CompanyModule { }
